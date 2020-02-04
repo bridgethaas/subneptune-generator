@@ -98,8 +98,6 @@ def run_pre_reduce(inlist_pre_reduce, initial_mod, pre_reduce_mod, mp):
     g = g.replace("<<loadfile>>",'"' + initial_mod + '"')
     g = g.replace("<<smwtfname>>", '"' + pre_reduce_mod + '"')
     g = g.replace("<<hist_smwtfname>>", '"hist_' + pre_reduce_mod.replace(".mod",".data") + '"')
-    print(pre_reduce_mod)
-    import pdb; pdb.set_trace()
     g = g.replace("<<mp>>",str((mp * 30 * mearth / msun)))
     
 
