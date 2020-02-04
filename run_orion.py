@@ -21,8 +21,10 @@ initial_mod = "initial_planet.mod"
 ####################################################
 #########         PARAMETERS LISTS         #########
 ####################################################
-mpList=[7.50] #Mearth? K2-146c 7.50 Mearth
-orbitalList= [0.03392] #AU
+#mpList=[7.50] #Mearth, K2-146c
+mpList = [5.77] #Mearth, K2-146b
+#orbitalList= [0.03392] #AU, K2-146c
+orbitalList = [0.02584] #AU, K2-146b
 enFracList=[0.01] 
 yList = [0.24]
 zList = [.02]
@@ -66,7 +68,6 @@ else:
 #########                 Run!                ######
 ####################################################  
 for mp in mpList:
-    #i changed this to add str(mp)
     pre_reduce_mod = "pre_reduce_" + str(mp) + ".mod"
     inlist_pre_reduce = "inlist_pre_reduce_" + str(mp)
     run_time = my.run_pre_reduce(inlist_pre_reduce, initial_mod, pre_reduce_mod, mp)
@@ -87,6 +88,7 @@ for mp in mpList:
             core_mass,
             rho)
 
+
         for z in zList:
             for y in yList:
                 comp_mod = (
@@ -101,6 +103,7 @@ for mp in mpList:
                     "_" + str(y) +
                     "_" + str(z))
 
+                #initial_mod -> pre_core_mod
                 run_time = my.run_comp(
                     initial_mod,
                     inlist_comp,
@@ -178,7 +181,6 @@ for mp in mpList:
                             currentropy = entropy_list
                             luminosity = luminosity_list
                     else:
-                        print('#############################################')
                         break
 
                     # Try a couple ways of fitting entropy
