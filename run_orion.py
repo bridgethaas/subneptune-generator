@@ -164,9 +164,9 @@ for mp in mpList:
 
 
                 for entropy in entropyList:
-                    if (os.path.isfile('LOGS/' + corem_mod) == True):
+                    if (os.path.isfile('LOGS/' + 'hist_' + corem_mod.replace('.mod','.data')) == True):
                         entropy_list, luminosity_list = loadtxt(
-                            'LOGS/' + corem_mod,
+                            'LOGS/' + 'hist_' + corem_mod.replace('.mod','.data'),
                             unpack=True,
                             skiprows=6,
                             usecols=[12,13])
