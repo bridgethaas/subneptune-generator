@@ -16,6 +16,9 @@ ax = plt.gca()
 mpList = [7.5]
 #fList = [0.009,0.01,0.011]
 fList = np.logspace(-3,np.log10(2),10)
+for f in fList:
+    f = '%.5f'%f 
+print(fList)
 #entropyList = [7.28,7.3,7.32]
 entropyList = [7.3]
 
@@ -23,13 +26,25 @@ entropyList = [7.3]
 alphas = [0.4,0.6,1]
 colors = ['r','b','g']
 
+def envelope_fraction(history):
+    return history.envelope_mass/(history.star_mass*msun)
+
+def calcX(history):
+    return history.Hydrogen_Mass / history.envelope_mass
+
+def calcY(history):
+    return history.He4_Mass / history.envelope_mass
+
+def calcZ(history):
+    return 1 - calcX(history) - calcY(history)
+
 for i, m in enumerate(mpList):
     ent = entropyList[i]
 
     for j, f in enumerate(fList):
-        h = mr.MesaData('feb10/hist_evolve_%s_%s_0.24_0.02_0.03392_%s_0.1.data'%(m,f,ent) ,file_type='log')
+        h = mr.MesaData('data/feb10/hist_evolve_%s_%s_0.24_0.02_0.03392_%s_0.1.data'%(m,f,ent) ,file_type='log')
         #ax.plot(h.star_mass[-1]*mfrac,h.radius[-1]*rfrac,color=colors[i],marker='.')
-        ax.plot(h.star_age,h.envelope_mass/(h.star_mass*msun))
+        ax.plot(h.star_age,envelope_fraction(h))
 
 ax.set_xlabel('time, Gyr')
 ax.set_ylabel('envelope fraction')
