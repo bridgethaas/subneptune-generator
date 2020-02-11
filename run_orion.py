@@ -21,11 +21,11 @@ initial_mod = "initial_planet.mod"
 ####################################################
 #########         PARAMETERS LISTS         #########
 ####################################################
-#mpList=[7.50] #Mearth, K2-146c
-mpList = [5.77] #Mearth, K2-146b
-#orbitalList= [0.03392] #AU, K2-146c
-orbitalList = [0.02584] #AU, K2-146b
-enFracList=[0.01] 
+mpList = [8.0] #Mearth, K2-146c
+#mpList = [5.77] #Mearth, K2-146b
+orbitalList = [0.03392] #AU, K2-146c
+#orbitalList = [0.02584] #AU, K2-146b
+enFracList = np.logspace(-3,np.log10(2),10)
 yList = [0.24]
 zList = [.02]
 entropyList = [-1]
@@ -105,7 +105,7 @@ for mp in mpList:
 
                 #initial_mod -> pre_core_mod
                 run_time = my.run_comp(
-                    initial_mod,
+                    pre_core_mod,
                     inlist_comp,
                     comp_mod,
                     z,

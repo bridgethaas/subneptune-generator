@@ -3,10 +3,10 @@
       show_log_description_at_start = .true. 
 
       save_model_when_terminate = .true.
-      save_model_filename = "test.mod"
+      save_model_filename = <<smwtfname>> 
 
       load_saved_model = .true.
-      saved_model_name = "initial_planet.mod"
+      saved_model_name = <<loadfile>>
 
       change_initial_net = .true.      
       new_net_name = 'basic.net'
@@ -36,7 +36,7 @@
 
       relax_mass = .true.
       relax_initial_mass = .true.
-      new_mass = 0.0006752714659159462 !! Sets it to 30x mp
+      new_mass = <<mp>> ! Sets it to 30x mp
       lg_max_abs_mdot = 3.0d-10 !(1/10000 earths per year)
     steps_to_take_before_terminate = 25000 
 / ! end of star_job namelist
@@ -65,7 +65,7 @@
       write_header_frequency = 100
       
       T_mix_limit = 0
-      !star_history_name = "hist_test.data"
+      star_history_name = <<hist_smwtfname>> 
 / ! end of controls namelist
 
 &pgstar

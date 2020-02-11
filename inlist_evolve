@@ -41,7 +41,7 @@
   irradiation_flux = <<flux_dayside>>! 1.d9 erg/cm^2/s ! day side flux!!! Bill puts in 1/4 by hand
 
   ! when to stop
-  max_age = 5d9
+  max_age = 10d9
   max_model_number = 5000 ! don't let it go on and on if run stuck
   Teff_lower_limit = -1d99
   T_mix_limit = 0

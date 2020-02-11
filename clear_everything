@@ -10,7 +10,7 @@ rm inlist_corem_*
 rm inlist_irrad_*
 rm inlist_evolve_*
 rm inlist_heating_*
-rm inlist_pre_core_*
+rm inlist_pre_reduce_*
 rm inlist_pre_core_*
 rm inlist_remove_cooling_*
 rm inlist_cooling_*
