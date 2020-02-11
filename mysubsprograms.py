@@ -23,6 +23,8 @@ mearth = 5.97e27
 sigma=5.67e-5
 au = 1.496e13
 
+def str(myfloat):
+    return "%.5f"%myfloat
 
 def calculate_rho(mp, enFrac):
     observed_Mcore, observed_Rcore = loadtxt('coreMRcomp2_v40_all.txt', unpack=True, skiprows =11, usecols=[0,1])
