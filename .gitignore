@@ -6,3 +6,4 @@ inlist_*
 profile_*
 LOGS/*
 *.sw*
+data/*
