@@ -1,0 +1,8 @@
+*.mod
+*.data
+photos/*
+inlist
+inlist_*
+profile_*
+LOGS/*
+*.sw*

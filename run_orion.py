@@ -26,6 +26,7 @@ mpList = [8.0] #Mearth, K2-146c
 orbitalList = [0.03392] #AU, K2-146c
 #orbitalList = [0.02584] #AU, K2-146b
 enFracList = np.logspace(-3,np.log10(2),10)
+
 yList = [0.24]
 zList = [.02]
 entropyList = [-1]
