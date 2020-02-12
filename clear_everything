@@ -40,7 +40,7 @@ rm comp_*
 rm corer_*
 rm corel_*
 rm reduce_*
-#rm remove_*
+rm remove_*
 rm corem_*
 rm heating_*
 rm irrad_*
