@@ -7,6 +7,9 @@ from scipy import loadtxt, optimize
 import mysubsprograms as my
 import sys
 
+def str(myfloat):
+    return "%.5f"%myfloat
+
 #Constants
 msun = 1.9892e33
 rsun = 6.9598e10
@@ -21,12 +24,12 @@ initial_mod = "initial_planet.mod"
 ####################################################
 #########         PARAMETERS LISTS         #########
 ####################################################
-mpList = [8.0] #Mearth, K2-146c
+mpList = [7.5] #Mearth, K2-146c
 #mpList = [5.77] #Mearth, K2-146b
 orbitalList = [0.03392] #AU, K2-146c
 #orbitalList = [0.02584] #AU, K2-146b
-enFracList = np.logspace(-3,np.log10(2),10)
-
+#enFracList = np.logspace(-4,np.log10(2*(10**-2)),10)
+enFracList = [0.01]
 yList = [0.24]
 zList = [.02]
 entropyList = [-1]
@@ -141,11 +144,13 @@ for mp in mpList:
                     "_" + str(y) +
                     "_" + str(z))
 
+                print('START REDUCE-----------------------------------')
                 run_time = my.run_reduce(
                     inlist_reduce,
                     corel_mod,
                     reduce_mod,
                     mp)
+                print('END REDUCE-------------------------------------')
 
                 corem_mod = (
                     "corem_" + str(mp) +
