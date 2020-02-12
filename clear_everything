@@ -36,13 +36,14 @@ rm x*
 cd ..
 cd LOGS
 
-rm comp_*
-rm corer_*
-rm corel_*
-rm reduce_*
-#rm remove_*
-rm corem_*
-rm heating_*
-rm irrad_*
-#rm evolve_*
-rm pre_core_*
+rm hist_comp_*
+#rm corer_*
+rm hist_corel_*
+rm hist_reduce_*
+rm hist_remove_*
+rm hist_corem_*
+rm hist_heating_*
+rm hist_irrad_*
+#rm hist_evolve_*
+rm hist_pre_core_*
+rm hist_pre_reduce_*
