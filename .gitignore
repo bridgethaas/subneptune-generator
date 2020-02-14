@@ -7,3 +7,4 @@ profile_*
 LOGS/*
 *.sw*
 data/*
+slurm*
