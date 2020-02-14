@@ -25,6 +25,8 @@ au = 1.496e13
 
 def str(myfloat):
     return "%.5f"%myfloat
+def expstr(myfloat):
+    return "%.8e"%myfloat
 
 def calculate_rho(mp, enFrac):
     observed_Mcore, observed_Rcore = loadtxt('coreMRcomp2_v40_all.txt', unpack=True, skiprows =11, usecols=[0,1])
@@ -100,7 +102,7 @@ def run_pre_reduce(inlist_pre_reduce, initial_mod, pre_reduce_mod, mp):
     g = g.replace("<<loadfile>>",'"' + initial_mod + '"')
     g = g.replace("<<smwtfname>>", '"' + pre_reduce_mod + '"')
     g = g.replace("<<hist_smwtfname>>", '"hist_' + pre_reduce_mod.replace(".mod",".data") + '"')
-    g = g.replace("<<mp>>",str((mp * 30 * mearth / msun)))
+    g = g.replace("<<mp>>",expstr((mp * 30 * mearth / msun)))
     
 
     h = open(inlist_pre_reduce, 'w')
@@ -125,8 +127,8 @@ def run_pre_core(inlist_pre_core, pre_reduce_mod, pre_core_mod, enFrac,core_mass
     g = g.replace("<<loadfile>>",'"' + pre_reduce_mod + '"')
     g = g.replace("<<smwtfname>>", '"' + pre_core_mod + '"')
     g = g.replace("<<hist_smwtfname>>", '"hist_' + pre_core_mod.replace(".mod",".data") + '"')
-    g = g.replace("<<core_mass>>", str(.1 * core_mass * mearth / msun))
-    g = g.replace("<<rho>>", str(rho))
+    g = g.replace("<<core_mass>>", expstr(.1 * core_mass * mearth / msun))
+    g = g.replace("<<rho>>", expstr(rho))
     
     h = open(inlist_pre_core, 'w')
     h.write(g)
@@ -194,7 +196,7 @@ def run_reduce(inlist_reduce, corel_mod, reduce_mod, mp):
     g = g.replace("<<loadfile>>",'"' + corel_mod + '"')
     g = g.replace("<<smwtfname>>", '"' + reduce_mod + '"')
     g = g.replace("<<hist_smwtfname>>", '"hist_' + reduce_mod.replace(".mod",".data") + '"')
-    g = g.replace("<<mp>>",str((mp * mearth / msun)))
+    g = g.replace("<<mp>>",expstr((mp * mearth / msun)))
     
 
     h = open(inlist_reduce, 'w')
@@ -217,8 +219,8 @@ def run_corem(inlist_corem, reduce_mod, corem_mod, core_mass, rho):
     g = g.replace("<<loadfile>>",'"' + reduce_mod + '"')
     g = g.replace("<<smwtfname>>", '"' + corem_mod + '"')
     g = g.replace("<<hist_smwtfname>>", '"hist_' + corem_mod.replace(".mod",".data") + '"')
-    g = g.replace("<<core_mass>>", str(core_mass * mearth / msun))
-    g = g.replace("<<rho>>", str(rho))
+    g = g.replace("<<core_mass>>", expstr(core_mass * mearth / msun))
+    g = g.replace("<<rho>>", expstr(rho))
     
     h = open(inlist_corem, 'w')
     h.write(g)
@@ -243,7 +245,7 @@ def run_heating(inlist_heating, corem_mod, heating_mod, entropy, luminosity):
     g = g.replace("<<entropy>>", str(entropy))
     
     # This is to inflate the planet
-    g = g.replace("<<luminosity>>", str(luminosity))
+    g = g.replace("<<luminosity>>", expstr(luminosity))
     
     h = open(inlist_heating, 'w')
     h.write(g)
@@ -332,8 +334,8 @@ def run_irrad(irrad_profile, inlist_irrad, remove_mod, irrad_mod, column_depth, 
     g = g.replace("<<smwtfname>>", '"' + irrad_mod + '"')
     g = g.replace("<<hist_smwtfname>>", '"hist_' + irrad_mod.replace(".mod",".data") + '"')
     g = g.replace("<<irrad_profile>>", '"' + irrad_profile + '"')
-    g = g.replace("<<flux_dayside>>", str(flux_dayside))
-    g = g.replace("<<column_depth>>", str(column_depth))
+    g = g.replace("<<flux_dayside>>", expstr(flux_dayside))
+    g = g.replace("<<column_depth>>", expstr(column_depth))
 
     h = open(inlist_irrad, 'w')
     h.write(g)
@@ -362,17 +364,17 @@ def run_evolve(evolve_profile, inlist_evolve, irrad_mod, evolve_mod,
     g = g.replace("<<evolve_profile>>", '"' + evolve_profile + '"')
 
     #Flux Parameters
-    g = g.replace("<<formation_time>>",str(formation_time))
-    g = g.replace("<<column_depth>>",str(column_depth))
-    g = g.replace("<<flux_dayside>>", str(flux_dayside))
+    g = g.replace("<<formation_time>>",expstr(formation_time))
+    g = g.replace("<<column_depth>>",expstr(column_depth))
+    g = g.replace("<<flux_dayside>>", expstr(flux_dayside))
 
     #x-controls
     g = g.replace("<<n_frac>>", str(n_frac))
     g = g.replace("<<a>>", str(a))
-    g = g.replace("<<ms>>", str(ms))
+    g = g.replace("<<ms>>", expstr(ms))
     g = g.replace("<<BA>>", str(BA))
     g = g.replace("<<orb_sep>>", str(orb_sep))
-    g = g.replace("<<ec>>", str(ec))
+    g = g.replace("<<ec>>", expstr(ec))
     g = g.replace("<<teq>>", str(teq))
     g = g.replace("<<escape_regime>>", str(escape_regime))
     g = g.replace("<<diff_sep>>", str(diff_sep))
