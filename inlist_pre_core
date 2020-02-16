@@ -56,7 +56,7 @@
       mixing_length_alpha = 1.89d0
       MLT_option = 'Henyey'
       
-      !star_history_name = <<hist_smwtfname>>
+      star_history_name = <<hist_smwtfname>>
 / ! end of controls namelist
 
 
