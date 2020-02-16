@@ -12,17 +12,26 @@ mfrac = msun/mearth
 plt.figure()
 ax = plt.gca()
 
+def formatstring(myfloat):
+    return '%.5f'%myfloat
+
 #mpList = [7.0,7.5,8.0]
-mpList = [7.5]
+mpList = np.linspace(7.0,8.0,11)
+for m in mpList:
+    m = formatstring(m)
+print(mpList)
 #fList = [0.009,0.01,0.011]
 fList = np.logspace(-3,np.log10(2),10)
 for f in fList:
-    f = '%.5f'%f 
+    f = formatstring(f) 
 print(fList)
-#entropyList = [7.28,7.3,7.32]
-entropyList = [7.3]
+entropyList = [7.28,7.28,7.29,7.29,7.3,7.3,7.3,7.31,7.31,7.32,7.32]
+for ent in entropyList:
+    ent = formatstring(ent)
+print(entropyList)
+#entropyList = [7.3]
 
-#styles = ['-','--','-.']
+'''#styles = ['-','--','-.']
 alphas = [0.4,0.6,1]
 colors = ['r','b','g']
 
@@ -52,4 +61,4 @@ ax.set_ylabel('envelope fraction')
 lines = ax.get_lines()
 ax.legend([lines[k] for k in [2,5,8]],['$M_0 = 7.0 M_E$','$M_0 = 7.5 M_E$','$M_0 = 8.0 M_E$']) 
 
-plt.show()
+plt.show()'''
