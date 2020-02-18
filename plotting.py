@@ -16,22 +16,21 @@ def formatstring(myfloat):
     return '%.5f'%myfloat
 
 #mpList = [7.0,7.5,8.0]
-mpList = np.linspace(7.0,8.0,11)
-for m in mpList:
-    m = formatstring(m)
-print(mpList)
-#fList = [0.009,0.01,0.011]
-fList = np.logspace(-3,np.log10(2),10)
-for f in fList:
-    f = formatstring(f) 
-print(fList)
-entropyList = [7.28,7.28,7.29,7.29,7.3,7.3,7.3,7.31,7.31,7.32,7.32]
-for ent in entropyList:
-    ent = formatstring(ent)
-print(entropyList)
-#entropyList = [7.3]
+mpList = list(np.linspace(7.0,8.0,11))
+for i, m in enumerate(mpList):
+    mpList[i] = formatstring(m)
+#print(['%.5f'%item for item in mpList])
 
-'''#styles = ['-','--','-.']
+#fList = [0.009,0.01,0.011]
+fList = list(np.logspace(-4,np.log10(2*(10**-2)),10))
+for i, f in enumerate(fList):
+    fList[i] = formatstring(f) 
+
+entropyList = [7.28,7.28,7.29,7.29,7.3,7.3,7.3,7.31,7.31,7.32,7.32]
+for i, ent in enumerate(entropyList):
+    entropyList[i] = formatstring(ent)
+
+#styles = ['-','--','-.']
 alphas = [0.4,0.6,1]
 colors = ['r','b','g']
 
@@ -51,14 +50,17 @@ for i, m in enumerate(mpList):
     ent = entropyList[i]
 
     for j, f in enumerate(fList):
-        h = mr.MesaData('data/feb10/hist_evolve_%s_%s_0.24_0.02_0.03392_%s_0.1.data'%(m,f,ent) ,file_type='log')
-        #ax.plot(h.star_mass[-1]*mfrac,h.radius[-1]*rfrac,color=colors[i],marker='.')
-        ax.plot(h.star_age,envelope_fraction(h))
+        h = mr.MesaData('data/biggrid/hist_evolve_%s_%s_0.24000_0.02000_0.03392_%s_0.10000.data'%(m,f,ent) ,file_type='log')
 
-ax.set_xlabel('time, Gyr')
+        plt.subplot(4, 3, i+1)
+        plt.plot(h.star_mass[-1]*mfrac,h.envelope_mass[-1]/(h.star_mass[-1]*msun),marker='.',color='b')
+        #ax.plot(h.star_age,envelope_fraction(h))
+
+#ax.set_xlabel('time, Gyr')
 ax.set_ylabel('envelope fraction')
+#ax.set_yscale('log')
 
-lines = ax.get_lines()
-ax.legend([lines[k] for k in [2,5,8]],['$M_0 = 7.0 M_E$','$M_0 = 7.5 M_E$','$M_0 = 8.0 M_E$']) 
+#lines = ax.get_lines()
+#ax.legend([lines[k] for k in [2,5,8]],['$M_0 = 7.0 M_E$','$M_0 = 7.5 M_E$','$M_0 = 8.0 M_E$']) 
 
-plt.show()'''
+plt.show()
