@@ -1,6 +1,8 @@
 import os
 import numpy as np
 import mesa_reader as mr
+from scipy import interpolate
+import emcee
 
 mearth = 5.97e27
 msun = 1.9892e33
@@ -113,4 +115,67 @@ class Planet():
         
         return final_masses, final_fs, final_radii, final_ages
     
-    
+
+    def make_interp_functions(self, newage):
+        self.intpd_radii = []
+        self.intpd_masses = []
+        for i in range(0, len(self.grid_ages)):
+            if self.final_ages[i] < newage: 
+                self.intpd_radii.append(np.nan)
+                self.intpd_masses.append(np.nan)
+            else:
+                rad_age_interp = interpolate.interp1d(self.grid_ages[i], self.grid_radii[i],kind='linear')
+                self.intpd_radii.append(rad_age_interp(newage))
+
+                mass_age_interp = interpolate.interp1d(self.grid_ages[i], self.grid_masses[i], kind='linear')
+                self.intpd_masses.append(mass_age_interp(newage)) 
+
+        self.intpd_radii = np.array(self.intpd_radii).flatten()
+        self.intpd_masses = np.array(self.intpd_masses).flatten()
+
+        grid_points = np.column_stack((self.grid_masses[:,0], self.grid_fs[:,0]))
+
+        self.radius_interp = interpolate.LinearNDInterpolator(grid_points, self.intpd_radii)
+        self.mass_interp = interpolate.LinearNDInterpolator(grid_points, self.intpd_masses)
+
+    def run_mcmc(self, newage, nwalkers, burn_in=500, nsteps=10000):
+
+        #call method to define the interpolation functions
+        self.make_interp_functions(newage)
+
+        #define (log) likelihood
+        def log_likelihood(x, mu_m, sigma_m, mu_r, sigma_r):
+            lval = -0.5 * ( (( (self.mass_interp(x[0],x[1]) - mu_m) / sigma_m ) ** 2) +
+                            (( (self.radius_interp(x[0],x[1]) - mu_r) / sigma_r ) ** 2) )
+
+            if np.isnan(lval): 
+                lval = -np.inf
+
+            return lval
+
+        #hardcode ndim to set initial walker positions properly
+        ndim = 2
+        p0 = np.random.rand(nwalkers, ndim)
+
+        #fixing initial walker positions
+        p0[:,0] = p0[:,0] +  np.min(self.mpList)
+        p0[:,1] = (p0[:,1] * 0.01) + np.min(self.fList)
+
+        sampler = emcee.EnsembleSampler( nwalkers, ndim, log_likelihood, 
+                                         args=[self.mass,self.mass_unc,self.radius,self.radius_unc],
+                                         moves=[emcee.moves.StretchMove(a=4.0)] )
+
+        #run burn-in
+        state = sampler.run_mcmc(p0, burn_in)
+        sampler.reset()
+
+        #run mcmc
+        sampler.run_mcmc(state, nsteps)
+
+        samples = sampler.get_chain(flat=True)
+        print("Mean acceptance fraction: {0:.3f}".format(np.mean(sampler.acceptance_fraction)))
+        print("Autocorrelation time: {0:.2f} steps".format(sampler.get_autocorr_time()[0]))
+        
+        return samples 
+
+
