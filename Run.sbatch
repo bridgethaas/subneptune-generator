@@ -14,8 +14,8 @@ module load Anaconda3/5.1.0
 
 export OMP_NUM_THREADS=16
 
-./clean
+#./clean
 ./clear_everything
-./mk
+#./mk
 python run_orion.py
 
