@@ -8,3 +8,4 @@ LOGS/*
 *.sw*
 data/*
 slurm*
+.ipynb_checkpoints/*
