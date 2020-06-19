@@ -119,29 +119,38 @@ class Planet():
     def make_interp_functions(self, newage):
         self.intpd_radii = []
         self.intpd_masses = []
+        self.intpd_fs = []
+
         for i in range(0, len(self.grid_ages)):
             if self.final_ages[i] < newage: 
                 self.intpd_radii.append(np.nan)
                 self.intpd_masses.append(np.nan)
+                self.intpd_fs.append(np.nan)
             else:
                 rad_age_interp = interpolate.interp1d(self.grid_ages[i], self.grid_radii[i],kind='linear')
                 self.intpd_radii.append(rad_age_interp(newage))
 
                 mass_age_interp = interpolate.interp1d(self.grid_ages[i], self.grid_masses[i], kind='linear')
                 self.intpd_masses.append(mass_age_interp(newage)) 
+                
+                f_age_interp = interpolate.interp1d(self.grid_ages[i], self.grid_fs[i],kind='linear')
+                self.intpd_fs.append(f_age_interp(newage))
 
         self.intpd_radii = np.array(self.intpd_radii).flatten()
         self.intpd_masses = np.array(self.intpd_masses).flatten()
+        self.intpd_fs = np.array(self.intpd_fs).flatten()
 
         grid_points = np.column_stack((self.grid_masses[:,0], self.grid_fs[:,0]))
 
         self.radius_interp = interpolate.LinearNDInterpolator(grid_points, self.intpd_radii)
         self.mass_interp = interpolate.LinearNDInterpolator(grid_points, self.intpd_masses)
+        self.f_interp = interpolate.LinearNDInterpolator(grid_points, self.intpd_fs)
 
-    def run_mcmc(self, newage, nwalkers, burn_in=500, nsteps=10000):
+    def run_mcmc(self, newage, nwalkers, burn_in=500, nsteps=10000, prior='flat'):
 
         #call method to define the interpolation functions
         self.make_interp_functions(newage)
+
 
         #define (log) likelihood
         def log_likelihood(x, mu_m, sigma_m, mu_r, sigma_r):
@@ -152,6 +161,20 @@ class Planet():
                 lval = -np.inf
 
             return lval
+        
+        #define (log) prior
+        def log_prior(x,prior):
+            if prior == 'flat':
+                return 1.0
+            if prior == 'logflat':
+                return 1.0/x
+            else:
+                raise 
+
+        #prob = prior * likelihood
+        def log_prob(x, mu_m, sigma_m, mu_r, sigma_r,prior):
+            return log_prior(x,prior) + log_likelihood(x, mu_m, sigma_m, mu_r, sigma_r) 
+
 
         #hardcode ndim to set initial walker positions properly
         ndim = 2
@@ -161,8 +184,8 @@ class Planet():
         p0[:,0] = p0[:,0] +  np.min(self.mpList)
         p0[:,1] = (p0[:,1] * 0.01) + np.min(self.fList)
 
-        sampler = emcee.EnsembleSampler( nwalkers, ndim, log_likelihood, 
-                                         args=[self.mass,self.mass_unc,self.radius,self.radius_unc],
+        sampler = emcee.EnsembleSampler( nwalkers, ndim, log_prob, 
+                                         args=[self.mass,self.mass_unc,self.radius,self.radius_unc,prior],
                                          moves=[emcee.moves.StretchMove(a=4.0)] )
 
         #run burn-in
@@ -177,5 +200,38 @@ class Planet():
         print("Autocorrelation time: {0:.2f} steps".format(sampler.get_autocorr_time()[0]))
         
         return samples 
+
+
+    def final_fs_for_samples(self, samples):
+        samples_final_fs = []
+        deltas = []
+        for i in range(0,len(samples)):
+            mi = samples[i, 0]
+            fi = samples[i, 1]
+            
+            mf = self.mass_interp(mi, fi) 
+            ff = 1.0 - ((mi/mf) * (1 - fi))
+            samples_final_fs.append(ff) 
+            
+            delta = ((mf * ff) - (mi * fi)) / (mi * fi) 
+            deltas.append(delta)
+        return np.array(samples_final_fs), np.array(deltas)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
