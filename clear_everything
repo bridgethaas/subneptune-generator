@@ -23,11 +23,14 @@ rm reduce_*
 rm remove_*
 rm corem_*
 rm heating_*
+rm pre_reduce*
 rm pre_core_*
 rm profile_irrad*
 rm profile_remove_heating*
 rm profile_remove_cooling*
+rm profile_evolve*
 rm irrad*
+rm evolve*
 
 cd photos
 
@@ -44,6 +47,6 @@ rm hist_remove_*
 rm hist_corem_*
 rm hist_heating_*
 rm hist_irrad_*
-#rm hist_evolve_*
+rm hist_evolve_*
 rm hist_pre_core_*
 rm hist_pre_reduce_*

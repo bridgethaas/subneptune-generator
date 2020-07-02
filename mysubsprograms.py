@@ -23,10 +23,12 @@ mearth = 5.97e27
 sigma=5.67e-5
 au = 1.496e13
 
-def str(myfloat):
+def formatstr(myfloat):
     return "%.5f"%myfloat
 def expstr(myfloat):
-    return "%.8e"%myfloat
+    mystring = "%.8e"%myfloat
+    mystring = mystring.replace('e','d')
+    return mystring
 
 def calculate_rho(mp, enFrac):
     observed_Mcore, observed_Rcore = loadtxt('coreMRcomp2_v40_all.txt', unpack=True, skiprows =11, usecols=[0,1])
@@ -102,7 +104,8 @@ def run_pre_reduce(inlist_pre_reduce, initial_mod, pre_reduce_mod, mp):
     g = g.replace("<<loadfile>>",'"' + initial_mod + '"')
     g = g.replace("<<smwtfname>>", '"' + pre_reduce_mod + '"')
     g = g.replace("<<hist_smwtfname>>", '"hist_' + pre_reduce_mod.replace(".mod",".data") + '"')
-    g = g.replace("<<mp>>",expstr((mp * 30 * mearth / msun)))
+    g = g.replace("<<mp>>",expstr((mp * 5 * mearth / msun)))
+    #original factor of 30, changed to 10 so all models converge
     
 
     h = open(inlist_pre_reduce, 'w')
@@ -151,8 +154,8 @@ def run_comp(initial_mod,inlist_comp, comp_mod, z, y):
     g = g.replace("<<initial_mod>>",'"' + initial_mod + '"')
     g = g.replace("<<smwtfname>>", '"' + comp_mod + '"')
     g = g.replace("<<hist_smwtfname>>", '"hist_' + comp_mod.replace(".mod",".data") + '"')
-    g = g.replace("<<y>>",str(y))
-    g = g.replace("<<z>>",str(z))
+    g = g.replace("<<y>>",formatstr(y))
+    g = g.replace("<<z>>",formatstr(z))
 
     h = open(inlist_comp, 'w')
     h.write(g)
@@ -242,7 +245,7 @@ def run_heating(inlist_heating, corem_mod, heating_mod, entropy, luminosity):
     g = g.replace("<<loadfile>>",'"' + corem_mod + '"')
     g = g.replace("<<smwtfname>>", '"' + heating_mod + '"')
     g = g.replace("<<hist_smwtfname>>", '"hist_' + heating_mod.replace(".mod",".data") + '"')
-    g = g.replace("<<entropy>>", str(entropy))
+    g = g.replace("<<entropy>>", formatstr(entropy))
     
     # This is to inflate the planet
     g = g.replace("<<luminosity>>", expstr(luminosity))
@@ -267,7 +270,7 @@ def run_cooling(inlist_cooling, corem_mod, cooling_mod, entropy):
     g = g.replace("<<loadfile>>",'"' + corem_mod + '"')
     g = g.replace("<<smwtfname>>", '"' + cooling_mod + '"')
     g = g.replace("<<hist_smwtfname>>", '"hist_' + cooling_mod.replace(".mod",".data") + '"')
-    g = g.replace("<<entropy>>", str(entropy))
+    g = g.replace("<<entropy>>", formatstr(entropy))
     
     h = open(inlist_cooling, 'w')
     h.write(g)
@@ -369,19 +372,20 @@ def run_evolve(evolve_profile, inlist_evolve, irrad_mod, evolve_mod,
     g = g.replace("<<flux_dayside>>", expstr(flux_dayside))
 
     #x-controls
-    g = g.replace("<<n_frac>>", str(n_frac))
-    g = g.replace("<<a>>", str(a))
+    g = g.replace("<<n_frac>>", formatstr(n_frac))
+    g = g.replace("<<a>>", formatstr(a))
     g = g.replace("<<ms>>", expstr(ms))
-    g = g.replace("<<BA>>", str(BA))
-    g = g.replace("<<orb_sep>>", str(orb_sep))
+    g = g.replace("<<BA>>", formatstr(BA))
+    g = g.replace("<<orb_sep>>", formatstr(orb_sep))
     g = g.replace("<<ec>>", expstr(ec))
-    g = g.replace("<<teq>>", str(teq))
+    g = g.replace("<<teq>>", formatstr(teq))
     g = g.replace("<<escape_regime>>", str(escape_regime))
     g = g.replace("<<diff_sep>>", str(diff_sep))
     
     h = open(inlist_evolve, 'w')
     h.write(g)
     h.close()
+
     shutil.copyfile(inlist_evolve, "inlist")
 
     os.system('./star_make_planets')
