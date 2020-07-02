@@ -104,7 +104,8 @@ def run_pre_reduce(inlist_pre_reduce, initial_mod, pre_reduce_mod, mp):
     g = g.replace("<<loadfile>>",'"' + initial_mod + '"')
     g = g.replace("<<smwtfname>>", '"' + pre_reduce_mod + '"')
     g = g.replace("<<hist_smwtfname>>", '"hist_' + pre_reduce_mod.replace(".mod",".data") + '"')
-    g = g.replace("<<mp>>",expstr((mp * 30 * mearth / msun)))
+    g = g.replace("<<mp>>",expstr((mp * 5 * mearth / msun)))
+    #original factor of 30, changed to 10 so all models converge
     
 
     h = open(inlist_pre_reduce, 'w')

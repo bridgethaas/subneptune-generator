@@ -20,8 +20,6 @@
 !
 ! ***********************************************************************
      
-!to do: xtras
-
     module run_star_extras
 
     use star_lib
@@ -64,7 +62,7 @@
         type(star_info), pointer :: s
         integer, intent(in) :: id
         integer, intent(out) :: ierr
-        	 
+         
         ! x controls (n, a, M, f)
         double precision :: frac_absorbed_euv, frac_absorbing_radius, host_star_mass, right_side, comp_bool, f_r
         double precision :: orbital_distance, eddy_coeff, homopause_pressure, bond_albedo, escape_regime, mass_loss_rate
@@ -163,11 +161,11 @@
         !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
         envelope_mass = ((s% star_mass_h1 * msun) / s% xa(1,1))
-        s% xtra3 = envelope_mass
+        s% x_ctrl(3) = envelope_mass
 
         !Importing the varibles from the start of the step
-        scale_height =  s% xtra1
-        molar_mass = s% xtra2
+        scale_height =  s% x_ctrl(1)
+        molar_mass = s% x_ctrl(2)
 
         !The 1.25 is the molecular weight of H and He ** .5
         !V_he = 2.88 V_h2 = 1.98
@@ -222,23 +220,23 @@
 
         ! Escape regime 0 is hu et al
         IF (escape_regime == 0) THEN
-        	IF (q_net < q_c) THEN
-        	    f_r = 1
-			ELSE
-        	    f_r = q_c / q_net
-			END IF
-			mass_loss_rate = escape_el * f_r
-		END IF
+                IF (q_net < q_c) THEN
+                    f_r = 1
+                ELSE
+                    f_r = q_c / q_net
+                END IF
+                mass_loss_rate = escape_el * f_r
+        END IF
 
-		! Escape regime 1 is Murray clay
+        ! Escape regime 1 is Murray clay
         ! This chooses the minimum
-		IF (escape_regime == 1) THEN
-			IF (rr_mass_loss > escape_el) THEN
-                mass_loss_rate = escape_el
-			ELSE
-				mass_loss_rate = rr_mass_loss 
-			END IF
-		END IF
+        IF (escape_regime == 1) THEN
+                IF (rr_mass_loss > escape_el) THEN
+                    mass_loss_rate = escape_el
+                ELSE
+                    mass_loss_rate = rr_mass_loss 
+                END IF
+        END IF
 
         right_side = escape_dl * h1_number_frac * atomic_mass_h1 * 4 * pi * (homopause_radius ** 2)
 
@@ -250,16 +248,16 @@
                 total_loss_rate = (escape_rate_h1 + escape_rate_he4)
                 s% mstar_dot = -total_loss_rate
 
-                s% xtra4 = mass_loss_rate
-                s% xtra5 = right_side
-                s% xtra6 = homopause_radius
-                s% xtra7 = f_r
-                s% xtra8 = escape_rate_h1
-                s% xtra9 = escape_rate_he4
-                s% xtra10 = teq
-                s% xtra11 = 2
-                s% xtra12 = q_c
-                s% xtra13 = q_net
+                s% x_ctrl(4) = mass_loss_rate
+                s% x_ctrl(5) = right_side
+                s% x_ctrl(6) = homopause_radius
+                s% x_ctrl(7) = f_r
+                s% x_ctrl(8) = escape_rate_h1
+                s% x_ctrl(9) = escape_rate_he4
+                s% x_ctrl(10) = teq
+                s% x_ctrl(11) = 2
+                s% x_ctrl(12) = q_c
+                s% x_ctrl(13) = q_net
             END IF
 
             IF (mass_loss_rate > right_side) THEN
@@ -276,16 +274,16 @@
                 total_loss_rate = (escape_rate_h1 + escape_rate_he4)
                 s% mstar_dot = -total_loss_rate
 
-                s% xtra4 = mass_loss_rate
-                s% xtra5 = right_side
-                s% xtra6 = homopause_radius
-                s% xtra7 = f_r
-                s% xtra8 = escape_rate_h1
-                s% xtra9 = escape_rate_he4
-                s% xtra10 = teq
-                s% xtra11 = 1
-                s% xtra12 = q_c
-                s% xtra13 = q_net
+                s% x_ctrl(4) = mass_loss_rate
+                s% x_ctrl(5) = right_side
+                s% x_ctrl(6) = homopause_radius
+                s% x_ctrl(7) = f_r
+                s% x_ctrl(8) = escape_rate_h1
+                s% x_ctrl(9) = escape_rate_he4
+                s% x_ctrl(10) = teq
+                s% x_ctrl(11) = 1
+                s% x_ctrl(12) = q_c
+                s% x_ctrl(13) = q_net
             END IF
         END IF
     end subroutine mass_loss
@@ -331,7 +329,7 @@
     end subroutine energy_routine
 
 
-    integer function extras_startup(id, restart, ierr)
+    subroutine extras_startup(id, restart, ierr)
         integer, intent(in) :: id
         logical, intent(in) :: restart
         integer, intent(out) :: ierr
@@ -339,7 +337,7 @@
         ierr = 0
         call star_ptr(id, s, ierr)
         if (ierr /= 0) return
-        extras_startup = 0
+        !extras_startup = 0 commented out BMH 6/19
         call system_clock(time0,clock_rate)
         if (.not. restart) then
         call alloc_extra_info(s)
@@ -347,13 +345,13 @@
         call unpack_extra_info(s)
         end if
 
-        s% xtra1 = s% scale_height(1)
-        s% xtra2 = s% mu(1)
-    end function extras_startup
+        s% x_ctrl(1) = s% scale_height(1)
+        s% x_ctrl(2) = s% mu(1)
+    end subroutine extras_startup
 
           
-    subroutine extras_after_evolve(id, id_extra, ierr)
-        integer, intent(in) :: id, id_extra
+    subroutine extras_after_evolve(id, ierr)
+        integer, intent(in) :: id
         integer, intent(out) :: ierr
         type (star_info), pointer :: s
         real(dp) :: dt
@@ -379,8 +377,8 @@
 
     
     !returns either keep_going, retry, backup, or terminate.
-    integer function extras_check_model(id, id_extra)
-        integer, intent(in) :: id, id_extra
+    integer function extras_check_model(id)
+        integer, intent(in) :: id
         integer :: ierr
         type (star_info), pointer :: s
         ierr = 0
@@ -390,8 +388,8 @@
     end function extras_check_model
 
 
-    integer function how_many_extra_history_columns(id, id_extra)
-        integer, intent(in) :: id, id_extra
+    integer function how_many_extra_history_columns(id)
+        integer, intent(in) :: id
         integer :: ierr
         type (star_info), pointer :: s
         ierr = 0
@@ -401,9 +399,9 @@
     end function how_many_extra_history_columns
           
           
-    subroutine data_for_extra_history_columns(id, id_extra, n, names, vals, ierr)
+    subroutine data_for_extra_history_columns(id, n, names, vals, ierr)
         use star_def
-        integer, intent(in) :: id, id_extra, n
+        integer, intent(in) :: id, n
         character (len=maxlen_history_column_name) :: names(n)
         real(dp) :: vals(n)
         real(dp) :: alpha
@@ -517,10 +515,10 @@
         vals(26) = r_1000_bar
 
         names(27) = 'homopause_rad'
-        vals(27) = s% xtra6
+        vals(27) = s% x_ctrl(6)
 
         names(28) = 'f_r'
-        vals(28) = s% xtra7
+        vals(28) = s% x_ctrl(7)
 
         names(29) = 'scale_height'
         vals(29) = s% scale_height(1)
@@ -538,29 +536,29 @@
         vals(31) = vals(30) + (-1 * s% scale_height(1) * LOG(1000. / (vals(30))))
 
         names(32) = 'Region' !
-        vals(32) = s% xtra11
+        vals(32) = s% x_ctrl(11)
 
         names(33) = 'q_c'
-        vals(33) = s% xtra12
+        vals(33) = s% x_ctrl(12)
 
         names(34) = 'q_net'
-        vals(34) = s% xtra13
+        vals(34) = s% x_ctrl(13)
 
         names(35) = 'escape_el'
-        vals(35) = s% xtra4
+        vals(35) = s% x_ctrl(4)
 
         names(36) = 'right_side'
-        vals(36) = s% xtra5
+        vals(36) = s% x_ctrl(5)
 
         names(37) = 'envelope_mass'
-        vals(37) = s% xtra3
+        vals(37) = s% x_ctrl(3)
 
     end subroutine data_for_extra_history_columns
 
 
-    integer function how_many_extra_profile_columns(id, id_extra)
+    integer function how_many_extra_profile_columns(id)
         use star_def, only: star_info
-        integer, intent(in) :: id, id_extra
+        integer, intent(in) :: id
         integer :: ierr
         type (star_info), pointer :: s
         ierr = 0
@@ -570,10 +568,10 @@
     end function how_many_extra_profile_columns
           
           
-    subroutine data_for_extra_profile_columns(id, id_extra, n, nz, names, vals, ierr)
+    subroutine data_for_extra_profile_columns(id, n, nz, names, vals, ierr)
         use star_def, only: star_info, maxlen_profile_column_name
         use const_def, only: dp
-        integer, intent(in) :: id, id_extra, n, nz
+        integer, intent(in) :: id, n, nz
         character (len=maxlen_profile_column_name) :: names(n)
         real(dp) :: vals(nz,n)
         integer, intent(out) :: ierr
@@ -586,9 +584,9 @@
 
 
     ! returns either keep_going or terminate.
-    integer function extras_finish_step(id, id_extra)
+    integer function extras_finish_step(id)
         use star_def
-        integer, intent(in) :: id, id_extra
+        integer, intent(in) :: id
         integer :: ierr
         integer :: k,i,j
 
@@ -603,11 +601,11 @@
         extras_finish_step = keep_going
         call store_extra_info(s)
 
-        envelope_mass = s% xtra3
-        mass_loss_rate = s% xtra4
-        right_side = s% xtra5
-        escape_rate_h1 = s% xtra8
-        escape_rate_he4 = s% xtra9
+        envelope_mass = s% x_ctrl(3)
+        mass_loss_rate = s% x_ctrl(4)
+        right_side = s% x_ctrl(5)
+        escape_rate_h1 = s% x_ctrl(8)
+        escape_rate_he4 = s% x_ctrl(9)
         comp_bool = s% x_ctrl(56) !False on everything but the evolve inlist
         diffusive_separation = s% x_ctrl(59)
 

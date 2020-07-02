@@ -33,6 +33,11 @@
   max_number_backups = 100
   max_number_retries = 500
 
+  !added for mesa-r12778 6/30/20
+  steps_before_use_gold_tolerances = 50
+  use_eosDT2 = .true.
+  use_eosELM = .true.
+
   varcontrol_target = 9d-5
   mesh_delta_coeff = 0.5
 
