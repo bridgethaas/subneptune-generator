@@ -10,6 +10,8 @@
       load_saved_model = .true.
       saved_model_name = <<loadfile>>
 
+      history_columns_file = 'history_columns.list'
+
       write_profile_when_terminate = .true.
       filename_for_profile_when_terminate = <<irrad_profile>>
 
