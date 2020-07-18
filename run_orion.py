@@ -27,7 +27,8 @@ initial_mod = "initial_planet.mod"
 #mpList = [7.50] #Mearth, K2-146c
 #mpList = [5.77] #Mearth, K2-146b
 #mpList = np.arange(5.1,6.6+0.1,0.1) 
-mpList = [6.0, 6.1, 6.2, 6.3]
+#mpList = [6.0, 6.1, 6.2, 6.3]
+mpList = [5.8]
 #mpList = np.arange(6.7,8.4+0.1,0.1)
 #orbitalList = [0.03392] #AU, K2-146c
 #orbitalList = [0.0325, 0.0353] 
@@ -37,9 +38,9 @@ orbitalList = [0.026] #AU
 #orbitalList = [0.0248, 0.0268] old 
 #enFracList = list(np.logspace(-4,np.log10(2*(10**-2)),12))
 #enFracList = list(np.arange(0.004, 0.034+0.002, 0.002))
-#enFracList = [0.001, 0.002, 0.003] + list(np.arange(0.004, 0.034+0.002, 0.002))
+enFracList = [0.01] 
 #enFracList = list(np.arange(0.004,0.02+0.001,0.001))
-enFracList = [0.004, 0.01, 0.15, 0.2]
+#enFracList = [0.004, 0.01, 0.15, 0.2]
 yList = [0.24]
 zList = [.02]
 entropyList = [-1]
@@ -65,7 +66,6 @@ escape_type = 'hu'
 # Diffusive Separation
 # 1 is on 0 is off
 diff_sep = 1
-
 
 # This is for setting the type of escape
 # Only hu et. at 2017 or something
