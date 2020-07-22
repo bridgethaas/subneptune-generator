@@ -36,7 +36,7 @@ def plot_early_stages(ax, planet, x, y, plot_evolve=True, **kwargs):
         else:
             xs = getattr(stage, x)
 
-        ax.plot(xs, ys, '.', label=stage.name, **kwargs)
+        ax.plot(xs, ys, '.', label=stage.name, color=stage.color, **kwargs)
     
         add_to_legend(ax, label=stage.name, c=stage.color) 
 
