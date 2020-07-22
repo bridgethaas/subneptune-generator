@@ -179,14 +179,23 @@ for mp in mpList:
                     core_mass,
                     rho)
 
-
                 for entropy in entropyList:
                     if (os.path.isfile('LOGS/' + 'hist_' + corem_mod.replace('.mod','.data')) == True):
+                        header = loadtxt(
+                             'LOGS/' + 'hist_' + corem_mod.replace('.mod','.data'),
+                             unpack=True,
+                             skiprows=5,
+                             max_rows=1,
+                             dtype='str')
+                        #so that we can use index()...
+                        header = list(header)
+
                         entropy_list, luminosity_list = loadtxt(
                             'LOGS/' + 'hist_' + corem_mod.replace('.mod','.data'),
                             unpack=True,
                             skiprows=6,
-                            usecols=[12,13])
+                            usecols=[header.index('center_entropy'), header.index('luminosity_ergs_s')])
+                        #TODO: make sure that if index() fails it tells you, raise IOError 'missing whatever in history_columns list'
                         
                         if isinstance(entropy_list, (list, np.ndarray)):
                             currentropy = entropy_list[-1]
