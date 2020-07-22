@@ -26,11 +26,12 @@ au = 1.496e13
 def formatstr(myfloat):
     return "%.5f"%myfloat
 def expstr(myfloat):
-    mystring = "%.8e"%myfloat
+    mystring = "%.5e"%myfloat
     mystring = mystring.replace('e','d')
     return mystring
 
 def calculate_rho(mp, enFrac):
+    #TODO: think about fixing usecols to use index() rather than hardcoded #s? low stakes
     observed_Mcore, observed_Rcore = loadtxt('coreMRcomp2_v40_all.txt', unpack=True, skiprows =11, usecols=[0,1])
     core_radius_function = interp1d(observed_Mcore, observed_Rcore, fill_value="extrapolate")
 
@@ -74,8 +75,21 @@ def calculate_column_depth(Teq, profile, Teff_star):
     #print(Opacity_function(Teq, 2))
 
     #zone, mass, temperature, radius, pressure = loadtxt(profile, unpack=True, skiprows =6, usecols=[0,1,2,3,6])   
+
     #R, T, P are in LOG10
-    zone, mass, radius, temperature, pressure = loadtxt(profile, unpack=True, skiprows=6, usecols=[0,1,2,3,5])
+    header = loadtxt('LOGS/' + 'hist_' + corem_mod.replace('.mod','.data'),
+                        unpack=True,
+                        skiprows=5,
+                        max_rows=1,
+                        dtype='str')
+    header = list(header)
+    cols = [header.index('zone'),
+            header.index('mass'),
+            header.index('logR'),
+            header.index('logT'),
+            header.index('logP') ]
+    
+    zone, mass, radius, temperature, pressure = loadtxt(profile, unpack=True, skiprows=6, usecols=cols)
 
     #load in headers
     #headers = list(np.loadtxt(profile, unpack=True, skiprows=5, max_rows=1, dtype='str'))
