@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+# !/usr/bin/env python
 #python script created by Phil Arras UVA, modified by HW Chen NU and then modified more by Isaac Malsky
 import numpy as np
 import os
@@ -81,6 +81,8 @@ else:
 ####################################################
 #########                 Run!                ######
 ####################################################  
+os.system('./mk')
+
 for mp in mpList:
     pre_reduce_mod = "pre_reduce_" + str(mp) + ".mod"
     inlist_pre_reduce = "inlist_pre_reduce_" + str(mp)
