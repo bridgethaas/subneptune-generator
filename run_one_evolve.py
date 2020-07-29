@@ -1,18 +1,18 @@
 import mysubsprograms as my
 
-evolve_profile = 'profile_evolve10.0_0.01_0.24_0.02_0.1_8.0_0.1'
-inlist_evolve = 'inlist_evolve_10.0_0.01_0.24_0.02_0.1_8.0_0.1'
-irrad_mod = 'irrad_10.0_0.01_0.24_0.02_0.1_8.0.mod'
-evolve_mod = 'Test_BAD'
+evolve_profile = 'profile_evolve5.80000_0.01000_0.24000_0.02000_0.02600_7.23000_0.10000'
+inlist_evolve = 'inlist_evolve_5.80000_0.01000_0.24000_0.02000_0.02600_7.23000_0.10000' 
+irrad_mod = 'irrad_5.80000_0.01000_0.24000_0.02000_0.02600_7.23000.mod' 
+evolve_mod = 'evolve_5.80000_0.01000_0.24000_0.02000_0.02600_7.23000_0.10000.mod' 
 n_frac = 0.1
 a = 1.0
-ms = 1.0
-orb_sep = 0.1
-ec = 1e9
-column_depth = 50
-flux_dayside = 1164284558.89515 / 1000
+ms = 0.331 
+orb_sep = 0.026
+ec = 1.0e9
+column_depth = 3.113836479074946 
+flux_dayside = 20764393.675119787 
 formation_time = 6e6
-teq = 1500
+teq = 550.0713820446309 
 BA = 0.2
 escape_regime = 0
 diff_sep = 1

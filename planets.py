@@ -88,7 +88,7 @@ class Planet():
         max_len = 0
         
         for i, fname in enumerate(fnames):
-            h = mr.MesaData(fname,file_type='log')
+            h = mr.MesaData(fname, file_type='log')
             if loud:
                 print(fname)
             
