@@ -77,7 +77,7 @@ def calculate_column_depth(Teq, profile, Teff_star):
     #zone, mass, temperature, radius, pressure = loadtxt(profile, unpack=True, skiprows =6, usecols=[0,1,2,3,6])   
 
     #R, T, P are in LOG10
-    header = loadtxt('LOGS/' + 'hist_' + corem_mod.replace('.mod','.data'),
+    header = loadtxt(profile,
                         unpack=True,
                         skiprows=5,
                         max_rows=1,
