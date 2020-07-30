@@ -47,9 +47,11 @@ class Planet():
         if len(kwargs.keys()):
             print(kwargs)
         
+        self.color = 'C%d'%len(self.stages)
+
         self.fnames = self.format_file_names()
         
-        self.grid_masses, self.grid_fs, self.grid_radii, self.grid_ages = self.load_models(self.fnames)
+        self.grid_masses, self.grid_radii, self.grid_fs, self.grid_ages, self.grid_luminosities = self.load_models(self.fnames)
 
         self.final_masses, self.final_fs, self.final_radii, self.final_ages = self.get_finals()
         
@@ -80,28 +82,51 @@ class Planet():
         radii = []
         fs = []
         ages = []
-        
+        luminosities = []
+        self.datadicts = []
+
         max_len = 0
         
         for i, fname in enumerate(fnames):
-            h = mr.MesaData(fname,file_type='log')
+            h = mr.MesaData(fname, file_type='log')
             if loud:
                 print(fname)
             
+            datadict = {}
+            for bulk_name in h.bulk_names:
+                history = getattr(h, bulk_name)
+                try:
+                    len(history)
+                except:
+                    history = [history]
+                datadict[bulk_name] = history
+            self.datadicts.append(datadict)
+
             masses.append(h.star_mass*mfrac)
             radii.append(h.radius*rfrac)
             fs.append(envelope_fraction(h))
             ages.append(h.star_age)
+            luminosities.append(np.float64(h.luminosity))
             
-            if len(h.star_age) > max_len:
-                max_len = len(h.star_age)
+            if type(h.star_age) == np.ndarray:
+                if len(h.star_age) > max_len:
+                    max_len = len(h.star_age)
+            else:
+                if max_len < 1:
+                    max_len = 1
+                else:
+                    pass
         
-        arrays = [masses, fs, radii, ages]
+        arrays = [masses, radii, fs, ages, luminosities]
         square_arrays = [np.zeros((len(fnames),max_len))+np.nan for arr in arrays]
         for i, arr in enumerate(arrays):
             for j, model_arr in enumerate(arr):
-                this_len = len(model_arr)
-                square_arrays[i][j,:this_len] = model_arr
+                if type(model_arr) == np.ndarray:
+                    this_len = len(model_arr)
+                    square_arrays[i][j,:this_len] = model_arr
+                else:
+                    this_len = 1
+                    square_arrays[i][j] = model_arr
         
         return square_arrays
     
@@ -217,19 +242,128 @@ class Planet():
             deltas.append(delta)
         return np.array(samples_final_fs), np.array(deltas)
 
+    stages = ['pre_reduce', 'pre_core', 'comp', 'corel', 'reduce', 
+              'corem', 'heating', 'remove_heating', 'irrad']
+    def get_early_stages(self):
+        planets = []
+        for stage in self.stages:
+            p = EarlyPlanet(str(stage),
+                    self.mass, self.mass_unc,
+                    self.radius, self.radius_unc,
+                    self.datadir,
+                    self.mpList,
+                    self.fList,
+                    self.orbitalList,
+                    self.entropyList,
+                    stage
+            )
+            planets.append(p)
+
+        return planets
 
 
 
+class EarlyPlanet(Planet):
 
+    def __init__(
+            self,
+            name,
+            mass, mass_unc,
+            radius, radius_unc,
+            datadir,
+            mpList,
+            fList,
+            orbitalList,
+            entropyList,
+            stage,
+            **kwargs
+        ):
 
+        self.name = name
+        self.mass = mass
+        self.mass_unc = mass_unc
+        self.radius = radius
+        self.radius_unc = radius_unc
+        self.datadir = datadir
+        self.mpList = mpList
+        self.fList = fList
+        self.orbitalList = orbitalList
+        self.entropyList = entropyList
+        self.stage = stage
 
+        if len(kwargs.keys()):
+            print(kwargs)
 
+        self.color = 'C%d'%self.stages.index(stage)
+    
+        self.fnames = self.format_file_names()
 
+        self.grid_masses, self.grid_radii, self.grid_fs, self.grid_ages, self.grid_luminosities = self.load_models(self.fnames)
 
+    def __repr__(self):
+        return self.name
 
+    def format_file_names(self, formatter=None):
+        if formatter is None:
+            formatter = formatstring
 
+        fnames = []
 
+        if self.stage == 'pre_reduce':
+            for i, m in enumerate(self.mpList):
+                fname = self.datadir + '/hist_pre_reduce_%s.data'%(formatter(m))
+                fnames.append(fname)
 
+        elif self.stage == 'pre_core':
+            for i, m in enumerate(self.mpList):
+                for j, f in enumerate(self.fList):
+                    fname = self.datadir + '/hist_pre_core_%s_%s.data'%(
+                        formatter(m),
+                        formatter(f)
+                    )
+                    fnames.append(fname)
+
+        elif self.stage == 'comp' or self.stage == 'corel' or self.stage == 'reduce' or self.stage == 'corem':
+            for i, m in enumerate(self.mpList):
+                for j, f in enumerate(self.fList):
+                    fname = self.datadir + '/hist_' + str(self.stage) + '_%s_%s_0.24000_0.02000.data'%(
+                        formatter(m),
+                        formatter(f)
+                    )
+                    fnames.append(fname)
+
+        elif (self.stage == 'heating' or self.stage == 'remove_heating' or
+              self.stage == 'cooling' or self.stage == 'remove_cooling'):
+            for i, m in enumerate(self.mpList):
+                ent = self.entropyList[i]
+
+                for j, f in enumerate(self.fList):
+                    fname = self.datadir + '/hist_' + str(self.stage) + '_%s_%s_0.24000_0.02000_%s.data'%(
+                        formatter(m),
+                        formatter(f),
+                        formatter(ent)
+                    )
+                    fnames.append(fname)
+
+        elif self.stage == 'irrad':
+            for i, m in enumerate(self.mpList):
+                ent = self.entropyList[i]
+
+                for k, orbital in enumerate(self.orbitalList):
+                    for j, f in enumerate(self.fList):
+                        fname = self.datadir + '/hist_' + str(self.stage) + '_%s_%s_0.24000_0.02000_%s_%s.data'%(
+                            formatter(m),
+                            formatter(f),
+                            formatter(orbital),
+                            formatter(ent)
+                        )
+                        fnames.append(fname)
+
+        else:
+            print(str(self.stage) + ' is not a valid stage')
+
+        return fnames
+    
 
 
 

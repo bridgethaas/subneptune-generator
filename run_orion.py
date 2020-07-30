@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+# !/usr/bin/env python
 #python script created by Phil Arras UVA, modified by HW Chen NU and then modified more by Isaac Malsky
 import numpy as np
 import os
@@ -26,20 +26,23 @@ initial_mod = "initial_planet.mod"
 ####################################################
 #mpList = [7.50] #Mearth, K2-146c
 #mpList = [5.77] #Mearth, K2-146b
-#mpList = np.arange(5.1,6.6+0.1,0.1) 
-mpList = [5.8]
+mpList = np.arange(5.1,6.6+0.1,0.1) 
+#mpList = [5.8]
 #mpList = np.arange(6.7,8.4+0.1,0.1)
+
 #orbitalList = [0.03392] #AU, K2-146c
 #orbitalList = [0.0325, 0.0353] 
 #orbitalList = [0.02584] #AU, K2-146b
 orbitalList = [0.026] #AU 
 #orbitalList = [0.025, 0.027] 
-#orbitalList = [0.0248, 0.0268] old 
+
 #enFracList = list(np.logspace(-4,np.log10(2*(10**-2)),12))
 #enFracList = list(np.arange(0.004, 0.034+0.002, 0.002))
 #enFracList = [0.001, 0.002, 0.003] + list(np.arange(0.004, 0.034+0.002, 0.002))
-#enFracList = list(np.arange(0.004,0.02+0.001,0.001))
-enFracList = [0.01]
+#enFracList = [0.01] 
+enFracList = list(np.arange(0.004,0.02+0.001,0.001))
+#enFracList = [0.004, 0.01, 0.15, 0.2]
+
 yList = [0.24]
 zList = [.02]
 entropyList = [-1]
@@ -66,7 +69,6 @@ escape_type = 'hu'
 # 1 is on 0 is off
 diff_sep = 1
 
-
 # This is for setting the type of escape
 # Only hu et. at 2017 or something
 # And Murray Clay et. al or something are programmed in
@@ -81,6 +83,8 @@ else:
 ####################################################
 #########                 Run!                ######
 ####################################################  
+os.system('./mk')
+
 for mp in mpList:
     pre_reduce_mod = "pre_reduce_" + str(mp) + ".mod"
     inlist_pre_reduce = "inlist_pre_reduce_" + str(mp)
@@ -179,14 +183,23 @@ for mp in mpList:
                     core_mass,
                     rho)
 
-
                 for entropy in entropyList:
                     if (os.path.isfile('LOGS/' + 'hist_' + corem_mod.replace('.mod','.data')) == True):
+                        header = loadtxt(
+                             'LOGS/' + 'hist_' + corem_mod.replace('.mod','.data'),
+                             unpack=True,
+                             skiprows=5,
+                             max_rows=1,
+                             dtype='str')
+                        #so that we can use index()...
+                        header = list(header)
+
                         entropy_list, luminosity_list = loadtxt(
                             'LOGS/' + 'hist_' + corem_mod.replace('.mod','.data'),
                             unpack=True,
                             skiprows=6,
-                            usecols=[12,13])
+                            usecols=[header.index('center_entropy'), header.index('luminosity_ergs_s')])
+                        #TODO: make sure that if index() fails it tells you, raise IOError 'missing whatever in history_columns list'
                         
                         if isinstance(entropy_list, (list, np.ndarray)):
                             currentropy = entropy_list[-1]

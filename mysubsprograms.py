@@ -26,11 +26,12 @@ au = 1.496e13
 def formatstr(myfloat):
     return "%.5f"%myfloat
 def expstr(myfloat):
-    mystring = "%.8e"%myfloat
+    mystring = "%.5e"%myfloat
     mystring = mystring.replace('e','d')
     return mystring
 
 def calculate_rho(mp, enFrac):
+    #TODO: think about fixing usecols to use index() rather than hardcoded #s? low stakes
     observed_Mcore, observed_Rcore = loadtxt('coreMRcomp2_v40_all.txt', unpack=True, skiprows =11, usecols=[0,1])
     core_radius_function = interp1d(observed_Mcore, observed_Rcore, fill_value="extrapolate")
 
@@ -50,7 +51,6 @@ def calculate_rho(mp, enFrac):
 
 
 def calculate_column_depth(Teq, profile, Teff_star):
-    e = 2.7182818284
 
     if Teff_star < 3500:
         print ('here_test1', Teff_star)
@@ -68,17 +68,48 @@ def calculate_column_depth(Teq, profile, Teff_star):
         print ('here_test4', Teff_star)
         T,P, k_r, k_p = loadtxt('OpacityTableSolarMetal.txt', unpack=True, skiprows =38, usecols=[0,1,13,14])
 
-    Opacity_function = interpolate.interp2d(T, P, k_p)
-    zone, mass, temperature, radius, pressure = loadtxt(profile, unpack=True, skiprows =6, usecols=[0,1,2,3,6])   
+    #Opacity_function = interpolate.interp2d(T, np.log10(P), k_p)
+    #print(Opacity_function(Teq, 2))
+    points = np.column_stack((T, np.log10(P)))
+    Opacity_function = interpolate.LinearNDInterpolator(points, k_p)
+    #print(Opacity_function(Teq, 2))
+
+    #zone, mass, temperature, radius, pressure = loadtxt(profile, unpack=True, skiprows =6, usecols=[0,1,2,3,6])   
+
+    #R, T, P are in LOG10
+    header = loadtxt(profile,
+                        unpack=True,
+                        skiprows=5,
+                        max_rows=1,
+                        dtype='str')
+    header = list(header)
+    cols = [header.index('zone'),
+            header.index('mass'),
+            header.index('logR'),
+            header.index('logT'),
+            header.index('logP') ]
+    
+    zone, mass, radius, temperature, pressure = loadtxt(profile, unpack=True, skiprows=6, usecols=cols)
+
+    #load in headers
+    #headers = list(np.loadtxt(profile, unpack=True, skiprows=5, max_rows=1, dtype='str'))
+    #keys = ['zone', 'mass', 'logR', 'logT', 'logP']
+    #get indices for columns we want
+    #cols = []
+    
 
     switch_zone = []
     for i in range(len(zone)):
-        mass_column_depth = ((mass[0] - mass[i]) * msun) / (4 * 3.14159 * (radius[i] ** 2))
-        opacity_column_depth = (2 / (Opacity_function(Teq, pressure[i])))[0]
+        mass_column_depth = ((mass[0] - mass[i]) * msun) / (4 * np.pi * (((10**radius[i]) * rsun) ** 2))
+        opacity_column_depth = (2 / (Opacity_function(Teq, (pressure[i]))))#[0]))
+        #LOG pressure
+        #print(Opacity_function(Teq, (pressure[i])))
         switch_zone.append((opacity_column_depth - mass_column_depth, zone[i], mass_column_depth))
 
     column_depth = abs(switch_zone[0][0])
-    
+    #for i in range(len(switch_zone)):
+        #print(switch_zone[i][0])
+
     if switch_zone[0][0] > 0:
         for i in range(len(switch_zone)):
             if switch_zone[i][0] < 0:
@@ -105,7 +136,7 @@ def run_pre_reduce(inlist_pre_reduce, initial_mod, pre_reduce_mod, mp):
     g = g.replace("<<smwtfname>>", '"' + pre_reduce_mod + '"')
     g = g.replace("<<hist_smwtfname>>", '"hist_' + pre_reduce_mod.replace(".mod",".data") + '"')
     g = g.replace("<<mp>>",expstr((mp * 5 * mearth / msun)))
-    #original factor of 30, changed to 10 so all models converge
+    #original factor of 30, changed to 5? so all models converge
     
 
     h = open(inlist_pre_reduce, 'w')
