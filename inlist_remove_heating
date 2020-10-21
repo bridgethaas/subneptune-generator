@@ -31,7 +31,8 @@
    
       change_lnPgas_flag = .true.
       new_lnPgas_flag = .true.
-    steps_to_take_before_terminate = 25000 
+
+      steps_to_take_before_terminate = 25000 
 / ! end of star_job namelist
 
 

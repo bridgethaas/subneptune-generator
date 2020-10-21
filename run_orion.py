@@ -1,5 +1,6 @@
 # !/usr/bin/env python
 #python script created by Phil Arras UVA, modified by HW Chen NU and then modified more by Isaac Malsky
+#and then even more by Bridget Haas
 import numpy as np
 import os
 import scipy
@@ -26,8 +27,8 @@ initial_mod = "initial_planet.mod"
 ####################################################
 #mpList = [7.50] #Mearth, K2-146c
 #mpList = [5.77] #Mearth, K2-146b
-mpList = np.arange(5.1,6.6+0.1,0.1) 
-#mpList = [5.8]
+#mpList = np.arange(5.1,6.6+0.1,0.1) 
+mpList = [5.5]
 #mpList = np.arange(6.7,8.4+0.1,0.1)
 
 #orbitalList = [0.03392] #AU, K2-146c
@@ -37,8 +38,8 @@ orbitalList = [0.026] #AU
 #orbitalList = [0.025, 0.027] 
 
 #enFracList = list(np.logspace(-4,np.log10(2*(10**-2)),12))
-#enFracList = [0.01] 
-enFracList = list(np.arange(0.004,0.02+0.001,0.001))
+enFracList = [0.004] 
+#enFracList = list(np.arange(0.004,0.02+0.001,0.001))
 #enFracList = [0.004, 0.01, 0.15, 0.2]
 
 yList = [0.24]
@@ -206,6 +207,7 @@ for mp in mpList:
                             currentropy = entropy_list
                             luminosity = luminosity_list
                     else:
+                        print('Could not find corem history file, needed to find starting entropy for heating/cooling')
                         break
 
                     # Try a couple ways of fitting entropy

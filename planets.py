@@ -88,7 +88,11 @@ class Planet():
         max_len = 0
         
         for i, fname in enumerate(fnames):
-            h = mr.MesaData(fname, file_type='log')
+            try:
+                h = mr.MesaData(fname, file_type='log')
+            except OSError:
+                print(fname, 'does not exist')
+                continue
             if loud:
                 print(fname)
             
@@ -118,7 +122,7 @@ class Planet():
                     pass
         
         arrays = [masses, radii, fs, ages, luminosities]
-        square_arrays = [np.zeros((len(fnames),max_len))+np.nan for arr in arrays]
+        square_arrays = [np.zeros((len(masses),max_len))+np.nan for arr in arrays]
         for i, arr in enumerate(arrays):
             for j, model_arr in enumerate(arr):
                 if type(model_arr) == np.ndarray:
@@ -165,11 +169,11 @@ class Planet():
         self.intpd_masses = np.array(self.intpd_masses).flatten()
         self.intpd_fs = np.array(self.intpd_fs).flatten()
 
-        grid_points = np.column_stack((self.grid_masses[:,0], self.grid_fs[:,0]))
+        self.grid_points = np.column_stack((self.grid_masses[:,0], self.grid_fs[:,0]))
 
-        self.radius_interp = interpolate.LinearNDInterpolator(grid_points, self.intpd_radii)
-        self.mass_interp = interpolate.LinearNDInterpolator(grid_points, self.intpd_masses)
-        self.f_interp = interpolate.LinearNDInterpolator(grid_points, self.intpd_fs)
+        self.radius_interp = interpolate.LinearNDInterpolator(self.grid_points, self.intpd_radii)
+        self.mass_interp = interpolate.LinearNDInterpolator(self.grid_points, self.intpd_masses)
+        self.f_interp = interpolate.LinearNDInterpolator(self.grid_points, self.intpd_fs)
 
     def run_mcmc(self, newage, nwalkers, burn_in=500, nsteps=10000, prior='flat'):
 

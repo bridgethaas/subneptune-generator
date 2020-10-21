@@ -53,19 +53,19 @@ def calculate_rho(mp, enFrac):
 def calculate_column_depth(Teq, profile, Teff_star):
 
     if Teff_star < 3500:
-        print ('here_test1', Teff_star)
+        print('here_test1', Teff_star)
         T,P, k_r, k_p = loadtxt('OpacityTableSolarMetal.txt', unpack=True, skiprows =38, usecols=[0,1,5,6])
     elif 3500 <= Teff_star < 4500:
-        print ('here_test2', Teff_star)
+        print('here_test2', Teff_star)
         T,P, k_r, k_p = loadtxt('OpacityTableSolarMetal.txt', unpack=True, skiprows =38, usecols=[0,1,7,8])
     elif 4500 <= Teff_star < 5500:
-        print ('here_test2', Teff_star)
+        print('here_test2', Teff_star)
         T,P, k_r, k_p = loadtxt('OpacityTableSolarMetal.txt', unpack=True, skiprows =38, usecols=[0,1,9,10])
     elif 5500 <= Teff_star < 6500:
-        print ('here_test3', Teff_star)
+        print('here_test3', Teff_star)
         T,P, k_r, k_p = loadtxt('OpacityTableSolarMetal.txt', unpack=True, skiprows =38, usecols=[0,1,11,12])
     else:
-        print ('here_test4', Teff_star)
+        print('here_test4', Teff_star)
         T,P, k_r, k_p = loadtxt('OpacityTableSolarMetal.txt', unpack=True, skiprows =38, usecols=[0,1,13,14])
 
     #Opacity_function = interpolate.interp2d(T, np.log10(P), k_p)
@@ -126,8 +126,12 @@ def calculate_column_depth(Teq, profile, Teff_star):
 
 
 def run_pre_reduce(inlist_pre_reduce, initial_mod, pre_reduce_mod, mp):
+
+    if os.path.isfile(pre_reduce_mod):
+        return 0
     start_time = time.time()
-    print ("create initial planet")
+    #print ("create initial planet")
+    print('begin pre_reduce')
     f = open('inlist_pre_reduce', 'r')
     g = f.read()
     f.close()
@@ -152,8 +156,10 @@ def run_pre_reduce(inlist_pre_reduce, initial_mod, pre_reduce_mod, mp):
 
 
 def run_pre_core(inlist_pre_core, pre_reduce_mod, pre_core_mod, enFrac,core_mass,rho):
+    if os.path.isfile(pre_core_mod):
+        return 0
     start_time = time.time()
-    print ("create initial planet")
+    print('begin pre_core')
     f = open('inlist_pre_core', 'r')
     g = f.read()
     f.close()
@@ -176,8 +182,10 @@ def run_pre_core(inlist_pre_core, pre_reduce_mod, pre_core_mod, enFrac,core_mass
 
 
 def run_comp(initial_mod,inlist_comp, comp_mod, z, y):
+    if os.path.isfile(comp_mod):
+        return 0
     start_time = time.time()
-    print ("create initial planet")
+    print('begin comp')
     f = open('inlist_comp', 'r')
     g = f.read()
     f.close()
@@ -199,8 +207,10 @@ def run_comp(initial_mod,inlist_comp, comp_mod, z, y):
 
 
 def run_corel(inlist_corel, comp_mod, corel_mod):
+    if os.path.isfile(corel_mod):
+        return 0
     start_time = time.time()
-    print ("create initial planet")
+    print('begin corel')
     f = open('inlist_corel', 'r')
     g = f.read()
     f.close()
@@ -220,8 +230,10 @@ def run_corel(inlist_corel, comp_mod, corel_mod):
 
 
 def run_reduce(inlist_reduce, corel_mod, reduce_mod, mp):
+    if os.path.isfile(reduce_mod):
+        return 0
     start_time = time.time()
-    print ("create initial planet")
+    print('begin reduce')
     f = open('inlist_reduce', 'r')
     g = f.read()
     f.close()
@@ -244,8 +256,10 @@ def run_reduce(inlist_reduce, corel_mod, reduce_mod, mp):
     return run_time
 
 def run_corem(inlist_corem, reduce_mod, corem_mod, core_mass, rho):
+    if os.path.isfile(corem_mod):
+        return 0
     start_time = time.time()
-    print ("create initial planet")
+    print('begin corem')
     f = open('inlist_corem', 'r')
     g = f.read()
     f.close()
@@ -267,8 +281,10 @@ def run_corem(inlist_corem, reduce_mod, corem_mod, core_mass, rho):
 
 
 def run_heating(inlist_heating, corem_mod, heating_mod, entropy, luminosity):
+    if os.path.isfile(heating_mod):
+        return 0
     start_time = time.time()
-    print ("create initial planet")
+    print('begin heating')
     f = open('inlist_heating', 'r')
     g = f.read()
     f.close()
@@ -292,8 +308,10 @@ def run_heating(inlist_heating, corem_mod, heating_mod, entropy, luminosity):
 
 
 def run_cooling(inlist_cooling, corem_mod, cooling_mod, entropy):
+    if os.path.isfile(cooling_mod):
+        return 0
     start_time = time.time()
-    print ("create initial planet")
+    print('begin cooling')
     f = open('inlist_cooling', 'r')
     g = f.read()
     f.close()
@@ -314,8 +332,10 @@ def run_cooling(inlist_cooling, corem_mod, cooling_mod, entropy):
 
 
 def run_remove_heating(remove_heating_profile, inlist_remove_heating, heating_mod, remove_mod):
+    if os.path.isfile(remove_mod):
+        return 0
     start_time = time.time()
-    print ("create initial planet")
+    print('begin remove_heating')
     f = open('inlist_remove_heating', 'r')
     g = f.read()
     f.close()
@@ -335,8 +355,10 @@ def run_remove_heating(remove_heating_profile, inlist_remove_heating, heating_mo
     return run_time
 
 def run_remove_cooling(remove_cooling_profile, inlist_remove_cooling, cooling_mod, remove_mod):
+    if os.path.isfile(remove_mod):
+        return 0
     start_time = time.time()
-    print ("create initial planet")
+    print('begin remove_cooling')
     f = open('inlist_remove_cooling', 'r')
     g = f.read()
     f.close()
@@ -358,8 +380,10 @@ def run_remove_cooling(remove_cooling_profile, inlist_remove_cooling, cooling_mo
 
 
 def run_irrad(irrad_profile, inlist_irrad, remove_mod, irrad_mod, column_depth, flux_dayside):
+    if os.path.isfile(irrad_mod):
+        return 0
     start_time = time.time()
-    print ("create initial planet")
+    print('begin irrad')
     f = open('inlist_irrad', 'r')
     g = f.read()
     f.close()
@@ -386,7 +410,7 @@ def run_evolve(evolve_profile, inlist_evolve, irrad_mod, evolve_mod,
                 formation_time, teq, BA, escape_regime, diff_sep):
 
     start_time = time.time()
-    print ("create initial planet")
+    print('begin evolve')
     f = open('inlist_evolve', 'r')
     g = f.read()
     f.close()

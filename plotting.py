@@ -2,14 +2,16 @@ import os
 import numpy as np
 import mesa_reader as mr
 import matplotlib.pyplot as plt
-import matplotlib
+import matplotlib 
+from matplotlib import cm
+from matplotlib.colors import Normalize, LogNorm
 from scipy import interpolate
 from planets_grid.planets import *
 
 matplotlib.rcParams['figure.facecolor'] = 'white'
 
 
-def plot_early_stages(ax, planet, x, y, plot_evolve=True, **kwargs):
+def plot_early_stages(ax, planet, x, y, planet_index=0, plot_evolve=True, **kwargs):
     #ax - the axes you want to plot on
     #planet - Planet class object we're plotting the data from
     #x, y - quantities on the x and y axes 
@@ -26,9 +28,9 @@ def plot_early_stages(ax, planet, x, y, plot_evolve=True, **kwargs):
     for stage in ep:
         #TODO: handle when grid of early planets
         if hasattr(stage, y):
-            ys = getattr(stage, y)[0]
+            ys = getattr(stage, y)[planet_index]
         else:   
-            ys = stage.datadicts[0][y]
+            ys = stage.datadicts[planet_index][y]
 
         if x == 'timestep':
             xs = np.arange(len(ys)) + offset
@@ -44,6 +46,65 @@ def plot_early_stages(ax, planet, x, y, plot_evolve=True, **kwargs):
     ax.set_ylabel(y)
 
 
+
+def plot_grid_mr(ax, planet, age, coloring=False, color_by=None, colormap='plasma', time_index=None):
+    #makes time interpolation functions for M, R and fills planet.intpd_masses/radii
+    planet.make_interp_functions(age)
+
+    if coloring == True:
+        absmin = np.nanmin(np.hstack(getattr(planet, color_by)))
+        absmax = np.nanmax(np.hstack(getattr(planet, color_by)))
+        cmap = plt.get_cmap(colormap)
+
+    for i in range(0, len(planet.intpd_masses)):
+
+        if coloring == True:
+            if time_index is not None:
+                thiscolor = (getattr(planet, color_by)[i][time_index] - absmin) / (absmax - absmin)
+            else:   
+                thiscolor = (getattr(planet, color_by)[i] - absmin) / (absmax - absmin)
+
+            plt.scatter(planet.intpd_masses[i], planet.intpd_radii[i], color=cmap(thiscolor), marker='.') 
+        else:
+            ax.plot(planet.intpd_masses, planet.intpd_radii, '.')
+        
+    ax.set_xlabel('mass (M$_{\oplus}$)')
+    ax.set_ylabel('radius (R$_{\oplus}$)')
+
+    #cax = plt.gcf().add_axes([0.93, 0.13, 0.03, 0.75])
+    if coloring==True:
+        norm = Normalize(vmin=absmin, vmax=absmax)
+        cbar=plt.colorbar(cm.ScalarMappable(norm=norm, cmap=cmap), ax=ax)        
+        return cbar
+
+
+def plot_r_vs_t(ax, planet, init_mass=None, init_f=None, label=None):
+    #assumes make_interp_functions has already been run
+
+    if init_mass is not None and init_f is not None:
+        model_index = np.where( (np.around(planet.grid_points, 3) == 
+                                [init_mass, init_f]).all(axis=1) )
+        plt.plot(planet.grid_ages[model_index][0], planet.grid_radii[model_index][0], '-', label=label)
+    else: 
+        plt.plot(planet.grid_ages[0], planet.grid_radii[0], '-', label=label)
+
+    ax.set_xlabel('planet age (yr)')
+    ax.set_ylabel('planet radius (R$_{\oplus}$)') 
+
+
+def plot_f_vs_t(ax, planet, init_mass, init_f, label=None):
+    #assumes make_interp_functions has already been run
+
+    model_index = np.where( (np.around(planet.grid_points, 3) == 
+                            [init_mass, init_f]).all(axis=1) )
+    
+    plt.plot(planet.grid_ages[model_index][0], planet.grid_fs[model_index][0], '-', label=label)
+
+    ax.set_xlabel('planet age (yr)')
+    ax.set_ylabel('envelope fraction')
+
+
+#-------------------------------------------------------------------------
 from matplotlib.lines import Line2D
 def add_to_legend(
     ax,
