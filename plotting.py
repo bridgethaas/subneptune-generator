@@ -78,27 +78,27 @@ def plot_grid_mr(ax, planet, age, coloring=False, color_by=None, colormap='plasm
         return cbar
 
 
-def plot_r_vs_t(ax, planet, init_mass=None, init_f=None, label=None):
+def plot_r_vs_t(ax, planet, init_mass=None, init_f=None, label=None, **kwargs):
     #assumes make_interp_functions has already been run
 
     if init_mass is not None and init_f is not None:
         model_index = np.where( (np.around(planet.grid_points, 3) == 
                                 [init_mass, init_f]).all(axis=1) )
-        plt.plot(planet.grid_ages[model_index][0], planet.grid_radii[model_index][0], '-', label=label)
+        ax.plot(planet.grid_ages[model_index][0], planet.grid_radii[model_index][0], '-', label=label, **kwargs)
     else: 
-        plt.plot(planet.grid_ages[0], planet.grid_radii[0], '-', label=label)
+        ax.plot(planet.grid_ages[0], planet.grid_radii[0], '-', label=label, **kwargs)
 
     ax.set_xlabel('planet age (yr)')
     ax.set_ylabel('planet radius (R$_{\oplus}$)') 
 
 
-def plot_f_vs_t(ax, planet, init_mass, init_f, label=None):
+def plot_f_vs_t(ax, planet, init_mass, init_f, label=None, **kwargs):
     #assumes make_interp_functions has already been run
 
     model_index = np.where( (np.around(planet.grid_points, 3) == 
                             [init_mass, init_f]).all(axis=1) )
     
-    plt.plot(planet.grid_ages[model_index][0], planet.grid_fs[model_index][0], '-', label=label)
+    plt.plot(planet.grid_ages[model_index][0], planet.grid_fs[model_index][0], '-', label=label, **kwargs)
 
     ax.set_xlabel('planet age (yr)')
     ax.set_ylabel('envelope fraction')
