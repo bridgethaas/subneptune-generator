@@ -38,7 +38,7 @@ orbitalList = [0.026] #AU
 #orbitalList = [0.025, 0.027] 
 
 #enFracList = list(np.logspace(-4,np.log10(2*(10**-2)),12))
-enFracList = [0.004] 
+enFracList = [0.013] 
 #enFracList = list(np.arange(0.004,0.02+0.001,0.001))
 
 yList = [0.24]
