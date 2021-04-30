@@ -1,0 +1,11 @@
+*.mod
+*.data
+photos/*
+inlist
+inlist_*
+profile_*
+LOGS/*
+*.sw*
+data/*
+slurm*
+.ipynb_checkpoints/*
