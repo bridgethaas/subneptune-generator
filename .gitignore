@@ -1,11 +1,17 @@
+<<<<<<< HEAD
+# Ignore all the new mod files
 *.mod
+
 *.data
-photos/*
+
+# Ignore all the new inlists
 inlist
 inlist_*
 profile_*
+
+# Ignore LOGS and photos folder
 LOGS/*
-*.sw*
-data/*
+photos/*
+
+# Ignore cluster job files
 slurm*
-.ipynb_checkpoints/*

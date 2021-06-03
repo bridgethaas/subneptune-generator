@@ -356,7 +356,7 @@
       !he_core_k
 
    !## carbon core
-      c_core_mass
+      !c_core_mass
       !c_core_radius
       !c_core_lgT
       !c_core_lgRho
@@ -1238,3 +1238,4 @@
 
    !## timing
       !elapsed_time ! time since start of run (seconds)
+

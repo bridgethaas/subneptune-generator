@@ -1,0 +1,16 @@
+#!/bin/bash
+#SBATCH --account=pi-larogers
+#SBATCH --job-name=SubneptuneJob
+#SBATCH --mail-type=BEGIN,END
+#SBATCH --mail-user=
+#SBATCH --output=slurm-%j.out
+#SBATCH --error=slurm-%j.err
+
+#SBATCH --time=36:00:00
+#SBATCH --nodes=1
+#SBATCH --exclusive
+
+module load Anaconda3/5.1.0
+export OMP_NUM_THREADS=16
+
+python run_orion.py

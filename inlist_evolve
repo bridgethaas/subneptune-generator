@@ -1,108 +1,101 @@
-
-
 &star_job
-  show_log_description_at_start = .true.
+    show_log_description_at_start = .true.
 
-  load_saved_model = .true.
-  saved_model_name = <<loadfile>>
+    load_saved_model = .true.
+    saved_model_name = <<loadfile>>
 
-  history_columns_file = 'history_columns.list'
+    history_columns_file = 'history_columns.list'
 
-  save_model_when_terminate = .true.
-  save_model_filename = <<smwtfname>>
-  
-  write_profile_when_terminate = .true.
-  filename_for_profile_when_terminate = <<evolve_profile>>
-  
-  set_initial_model_number = .true.
-  initial_model_number = 0       
+    save_model_when_terminate = .true.
+    save_model_filename = <<smwtfname>>
 
-  set_initial_age = .true.
-  initial_age = <<formation_time>>
+    write_profile_when_terminate = .true.
+    filename_for_profile_when_terminate = <<evolve_profile>>
 
-  eos_file_prefix = 'mesa'
-  kappa_file_prefix = 'gs98'
-  kappa_lowT_prefix = 'lowT_Freedman11'
+    set_initial_model_number = .true.
+    initial_model_number = 0       
 
-  !changing EOS limits
-  !set_logRho_OPAL_SCVH_limits = .true.
-  !logRho1_OPAL_SCVH_limit = 3.52d0 
-  !logRho2_OPAL_SCVH_limit = 3.50d0 
-  set_eosPTEH_parameters = .true.
-  Z_for_all_PTEH = 1d0
-  Z_for_any_PTEH = 0.99d0
+    set_initial_age = .true.
+    initial_age = <<formation_time>>
 
-  set_HELM_OPAL_Zs = .true.
-  Z_all_OPAL = 1d0 
-  Z_all_HELM = 1d0 
-  
-  change_lnPgas_flag = .true.
-  new_lnPgas_flag = .false. !.true.
+    eos_file_prefix = 'mesa'
+    kappa_file_prefix = 'gs98'
+    kappa_lowT_prefix = 'lowT_Freedman11'
 
-  pgstar_flag = .false.
-  !pgstar_flag = .true.
+    !changing EOS limits
+    !set_logRho_OPAL_SCVH_limits = .true.
+    !logRho1_OPAL_SCVH_limit = 3.52d0 
+    !logRho2_OPAL_SCVH_limit = 3.50d0 
+    set_eosPTEH_parameters = .true.
 
-  steps_to_take_before_terminate = 10000 
+    Z_for_all_PTEH = 1d0
+    Z_for_any_PTEH = 0.99d0
+
+    set_HELM_OPAL_Zs = .true.
+    Z_all_OPAL = 1d0 
+    Z_all_HELM = 1d0 
+
+    change_lnPgas_flag = .true.
+    new_lnPgas_flag = .false. !.true.
+
+    pgstar_flag = .false.
+
+    steps_to_take_before_terminate = 10000 
 / ! end of star_job namelist
 
 &controls   
-  max_number_backups = 100
-  max_number_retries = 500
+    max_number_backups = 100
+    max_number_retries = 500
 
-  varcontrol_target = 9d-5
-  mesh_delta_coeff = 0.5
+    varcontrol_target = 1d-4
+    mesh_delta_coeff = 0.5
 
-  !use_split_merge_amr = .true.
-  !split_merge_amr_logtau_zoning = .false.
-  !split_merge_amr_log_zoning = .false.
+    !Surface heating parameters
+    column_depth_for_irradiation = <<column_depth>> 
+    irradiation_flux = <<flux_dayside>>
 
-  ! surface heating
-  column_depth_for_irradiation = <<column_depth>> ! 3.d2 cm^2/g
-  irradiation_flux = <<flux_dayside>>! 1.d9 erg/cm^2/s ! day side flux!!! Bill puts in 1/4 by hand
 
-  !eos
-  !logQ_max_OPAL_SCVH = 5.68d0
+    !Atmospheric conditions
+    !atm_option = 'T_tau'
+    !atm_T_tau_relation = 'Eddington'
 
-  ! when to stop
-  max_age = 3d9 !1d10
-  max_model_number = 5000 ! don't let it go on and on if run stuck
-  Teff_lower_limit = -1d99
-  T_mix_limit = 0
-  logQ_limit= 1.0d2
-      
-  ! output to files and terminal
-  photo_interval  = 10
-  profile_interval = 10
-  max_num_profile_models= 500
-  history_interval = 1
-  !terminal_cnt = 10
-  write_header_frequency = 10
+    !EOS options
+    !logQ_max_OPAL_SCVH = 5.68d0
 
-  x_ctrl(50)= <<n_frac>>                  !frac_absorbed_euv (η)
-  x_ctrl(51)= <<a>>                       !frac_absorbing_radius (a)
-  x_ctrl(52)= <<ms>>                      !host_star_mass (this gets multiplied by msol)
-  x_ctrl(53)= <<BA>>                      !Bond Albedo
-  x_ctrl(54)= <<orb_sep>>                 !orbital_distance (this gets multipled by au)
-  x_ctrl(55)= <<ec>>                      !eddy coefficient
-  x_ctrl(56)= 1		                        !Only run the comp change if true 
-  x_ctrl(57)= <<teq>>                     !teq
-  x_ctrl(58)= <<escape_regime>>           !0 is Hu, 1 is Murray Clay, 2 is nothing. Dont do 2.
-  x_ctrl(59)= <<diff_sep>>                !Diffusive separation
-	
-  use_other_adjust_mdot = .true.
-  use_other_energy = .true.
-  x_ctrl(3) = 1d10 ! core heat capacity  eps=erg/g/K
-  x_ctrl(4) = 1.0 ! fraction of core mass in "chondrite-like" rocky material
+    !When to stop
+    max_age = 1d10
+    max_model_number = 5000 !don't let it go on and on if run stuck
+    Teff_lower_limit = -1d99
+    T_mix_limit = 0
+    !logQ_limit= 1.0d2 !'good' logQ < 5
 
-  star_history_name = <<hist_smwtfname>>
+    !Output to files and terminal
+    photo_interval  = 10
+    profile_interval = 10
+    max_num_profile_models= 500
+    history_interval = 1
+    !terminal_cnt = 10
+    write_header_frequency = 10
 
+    x_ctrl(50)= <<n_frac>>                  !frac_absorbed_euv (η)
+    x_ctrl(51)= <<a>>                       !frac_absorbing_radius (a)
+    x_ctrl(52)= <<ms>>                      !host star mass (this gets multiplied by msol)
+    x_ctrl(53)= <<BA>>                      !Bond Albedo
+    x_ctrl(54)= <<orb_sep>>                 !orbital distance (this gets multipled by au)
+    x_ctrl(55)= <<ec>>                      !eddy coefficient
+    x_ctrl(56)= 1		                  !Only run the comp change if true 
+    x_ctrl(57)= <<teq>>                     !T_eq
+    x_ctrl(58)= <<escape_regime>>           !0 is Hu, 1 is Murray Clay, 2 is nothing. Dont do 2.
+    x_ctrl(59)= <<diff_sep>>                !Diffusive separation on or off  
+
+    !Core heating
+    use_other_adjust_mdot = .true.
+    use_other_energy = .true.
+    x_ctrl(3) = 1d10 !core heat capacity  eps=erg/g/K
+    x_ctrl(4) = 1.0 !fraction of core mass in "chondrite-like" rocky material
+
+    star_history_name = <<hist_smwtfname>>
 / ! end of controls namelist
-&pgstar
-  
-  TRho_Profile_win_flag = .true. 
-  show_TRho_Profile_eos_regions = .true.
-  TRho_Profile_file_flag = .true.
-  TRho_Profile_file_dir = 'png'
-  TRho_Profile_file_prefix = 'trho_profile_'
 
+&pgstar
 / ! end of pgstar namelist

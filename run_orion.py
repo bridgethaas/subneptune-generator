@@ -1,6 +1,7 @@
 # !/usr/bin/env python
 #python script created by Phil Arras UVA, modified by HW Chen NU and then modified more by Isaac Malsky
 #and then even more by Bridget Haas
+
 import numpy as np
 import os
 import scipy
@@ -22,24 +23,15 @@ sigma=5.67e-5
 au = 1.496e13
 
 initial_mod = "initial_planet.mod"
-####################################################
-#########         PARAMETERS LISTS         #########
-####################################################
-#mpList = [7.50] #Mearth, K2-146c
-#mpList = [5.77] #Mearth, K2-146b
-#mpList = np.arange(5.1,6.6+0.1,0.1) 
-mpList = [5.5]
-#mpList = np.arange(6.7,8.4+0.1,0.1)
 
-#orbitalList = [0.03392] #AU, K2-146c
-#orbitalList = [0.0325, 0.0353] 
-#orbitalList = [0.02584] #AU, K2-146b
+####################################################
+#########        Planet Parameters         #########
+####################################################
+mpList = [5.5] #Earth masses
+
 orbitalList = [0.026] #AU 
-#orbitalList = [0.025, 0.027] 
 
-#enFracList = list(np.logspace(-4,np.log10(2*(10**-2)),12))
 enFracList = [0.013] 
-#enFracList = list(np.arange(0.004,0.02+0.001,0.001))
 
 yList = [0.24]
 zList = [.02]
@@ -48,20 +40,27 @@ n_frac_list = [.10]
 
 
 ####################################################
-#########        IRRAD/EVOL CONDITIONS        ######
-####################################################                            
+#########          Star Parameters            ######
+####################################################
 rs = 0.330                       #star radius in rsun
-Teff_star = 3385                 #Host Star Temp
+ms = 0.331                       #host_star_mass
+Teff_star = 3385                 #host star temp
+
+
+####################################################
+#########     Mass Loss Assumptions           ######
+####################################################    
+a = 1.0                          #frac_absorbing_radius
 BA= 0.20                         #planet Bond albedo
 a = 1.0                          #frac_absorbing_radius
-ms = 0.331                       #host_star_mass
 ec = 1e9                         #eddy coefficient
-formation_time = 6e6             #Disk formation time
+formation_time = 6e6             #disk formation time
 
 
 # Mass Loss Regime
+#'hu' 'murray' or 0
 escape_type = 'hu' 
-#escape_type = 0
+#escape_type = 0 #for no mass loss
 
 # Diffusive Separation
 # 1 is on 0 is off
@@ -76,7 +75,6 @@ elif escape_type == 'murray':
     escape_regime = 1
 else:
     escape_regime = 2
-
 
 ####################################################
 #########                 Run!                ######
@@ -277,7 +275,7 @@ for mp in mpList:
                                         ( sigma*Teff_star**4 *
                                         (rs*rsun/orb_sep/au)**2) * (1-BA))
 
-                                    #equalibrium temperature
+                                    #equilibrium temperature
                                     teq =((flux_dayside/4.0/sigma)**0.25)
 
                                     column_depth = my.calculate_column_depth(
@@ -423,7 +421,7 @@ for mp in mpList:
                                         (sigma * Teff_star**4 *
                                         (rs * rsun / orb_sep / au )**2) * (1 - BA))    
 
-                                    #equalibrium temperature
+                                    #equilibrium temperature
                                     teq = (flux_dayside/ 4.0 /sigma)**0.25    
 
                                     column_depth = my.calculate_column_depth(

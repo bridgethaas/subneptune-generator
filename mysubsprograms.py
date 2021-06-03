@@ -40,41 +40,30 @@ def calculate_rho(mp, enFrac):
 
     planet_core_radius = core_radius_function(planet_core_mass)
 
-
     core_mass_cgs = planet_core_mass * mearth
     core_radius_cgs = planet_core_radius * rearth
 
-    core_volume = (4./3.) * (3.14159) * (core_radius_cgs ** 3.0)
+    core_volume = (4./3.) * (np.pi) * (core_radius_cgs ** 3.0)
     rhocore = core_mass_cgs / float(core_volume)
     
     return (rhocore, planet_core_radius)
 
 
-def calculate_column_depth(Teq, profile, Teff_star):
+def calculate_column_depth(, profile, Teff_star):
 
     if Teff_star < 3500:
-        print('here_test1', Teff_star)
         T,P, k_r, k_p = loadtxt('OpacityTableSolarMetal.txt', unpack=True, skiprows =38, usecols=[0,1,5,6])
     elif 3500 <= Teff_star < 4500:
-        print('here_test2', Teff_star)
         T,P, k_r, k_p = loadtxt('OpacityTableSolarMetal.txt', unpack=True, skiprows =38, usecols=[0,1,7,8])
     elif 4500 <= Teff_star < 5500:
-        print('here_test2', Teff_star)
         T,P, k_r, k_p = loadtxt('OpacityTableSolarMetal.txt', unpack=True, skiprows =38, usecols=[0,1,9,10])
     elif 5500 <= Teff_star < 6500:
-        print('here_test3', Teff_star)
         T,P, k_r, k_p = loadtxt('OpacityTableSolarMetal.txt', unpack=True, skiprows =38, usecols=[0,1,11,12])
     else:
-        print('here_test4', Teff_star)
         T,P, k_r, k_p = loadtxt('OpacityTableSolarMetal.txt', unpack=True, skiprows =38, usecols=[0,1,13,14])
 
-    #Opacity_function = interpolate.interp2d(T, np.log10(P), k_p)
-    #print(Opacity_function(Teq, 2))
     points = np.column_stack((T, np.log10(P)))
     Opacity_function = interpolate.LinearNDInterpolator(points, k_p)
-    #print(Opacity_function(Teq, 2))
-
-    #zone, mass, temperature, radius, pressure = loadtxt(profile, unpack=True, skiprows =6, usecols=[0,1,2,3,6])   
 
     #R, T, P are in LOG10
     header = loadtxt(profile,
@@ -91,24 +80,14 @@ def calculate_column_depth(Teq, profile, Teff_star):
     
     zone, mass, radius, temperature, pressure = loadtxt(profile, unpack=True, skiprows=6, usecols=cols)
 
-    #load in headers
-    #headers = list(np.loadtxt(profile, unpack=True, skiprows=5, max_rows=1, dtype='str'))
-    #keys = ['zone', 'mass', 'logR', 'logT', 'logP']
-    #get indices for columns we want
-    #cols = []
-    
-
     switch_zone = []
     for i in range(len(zone)):
         mass_column_depth = ((mass[0] - mass[i]) * msun) / (4 * np.pi * (((10**radius[i]) * rsun) ** 2))
-        opacity_column_depth = (2 / (Opacity_function(Teq, (pressure[i]))))#[0]))
+        opacity_column_depth = (2 / (Opacity_function(, (pressure[i]))))
         #LOG pressure
-        #print(Opacity_function(Teq, (pressure[i])))
         switch_zone.append((opacity_column_depth - mass_column_depth, zone[i], mass_column_depth))
 
     column_depth = abs(switch_zone[0][0])
-    #for i in range(len(switch_zone)):
-        #print(switch_zone[i][0])
 
     if switch_zone[0][0] > 0:
         for i in range(len(switch_zone)):
@@ -126,11 +105,9 @@ def calculate_column_depth(Teq, profile, Teff_star):
 
 
 def run_pre_reduce(inlist_pre_reduce, initial_mod, pre_reduce_mod, mp):
-
     if os.path.isfile(pre_reduce_mod):
         return 0
     start_time = time.time()
-    #print ("create initial planet")
     print('begin pre_reduce')
     f = open('inlist_pre_reduce', 'r')
     g = f.read()
@@ -152,7 +129,6 @@ def run_pre_reduce(inlist_pre_reduce, initial_mod, pre_reduce_mod, mp):
     os.system('./star_make_planets')
     run_time = time.time() - start_time
     return run_time
-
 
 
 def run_pre_core(inlist_pre_core, pre_reduce_mod, pre_core_mod, enFrac,core_mass,rho):
@@ -178,7 +154,6 @@ def run_pre_core(inlist_pre_core, pre_reduce_mod, pre_core_mod, enFrac,core_mass
     os.system('./star_make_planets')
     run_time = time.time() - start_time
     return run_time
-
 
 
 def run_comp(initial_mod,inlist_comp, comp_mod, z, y):
@@ -238,22 +213,20 @@ def run_reduce(inlist_reduce, corel_mod, reduce_mod, mp):
     g = f.read()
     f.close()
 
-
     g = g.replace("<<loadfile>>",'"' + corel_mod + '"')
     g = g.replace("<<smwtfname>>", '"' + reduce_mod + '"')
     g = g.replace("<<hist_smwtfname>>", '"hist_' + reduce_mod.replace(".mod",".data") + '"')
     g = g.replace("<<mp>>",expstr((mp * mearth / msun)))
     
-
     h = open(inlist_reduce, 'w')
     h.write(g)
     h.close()
     shutil.copyfile(inlist_reduce, "inlist")
 
-
     os.system('./star_make_planets')
     run_time = time.time() - start_time
     return run_time
+
 
 def run_corem(inlist_corem, reduce_mod, corem_mod, core_mass, rho):
     if os.path.isfile(corem_mod):
@@ -354,6 +327,7 @@ def run_remove_heating(remove_heating_profile, inlist_remove_heating, heating_mo
     run_time = time.time() - start_time
     return run_time
 
+
 def run_remove_cooling(remove_cooling_profile, inlist_remove_cooling, cooling_mod, remove_mod):
     if os.path.isfile(remove_mod):
         return 0
@@ -376,7 +350,6 @@ def run_remove_cooling(remove_cooling_profile, inlist_remove_cooling, cooling_mo
     os.system('./star_make_planets')
     run_time = time.time() - start_time
     return run_time
-
 
 
 def run_irrad(irrad_profile, inlist_irrad, remove_mod, irrad_mod, column_depth, flux_dayside):

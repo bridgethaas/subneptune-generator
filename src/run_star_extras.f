@@ -1,4 +1,4 @@
-! **********************************************************************
+! ***********************************************************************
 !
 !   Copyright (C) 2011  Bill Paxton
 !
@@ -62,7 +62,7 @@
         type(star_info), pointer :: s
         integer, intent(in) :: id
         integer, intent(out) :: ierr
-         
+        	 
         ! x controls (n, a, M, f)
         double precision :: frac_absorbed_euv, frac_absorbing_radius, host_star_mass, right_side, comp_bool, f_r
         double precision :: orbital_distance, eddy_coeff, homopause_pressure, bond_albedo, escape_regime, mass_loss_rate
@@ -101,7 +101,7 @@
 
         !Converting all the planetary paremeters to cgs
         planet_radius_cgs= (10 ** (s% log_surface_radius)) * Rsun
-        planet_age_cgs= (s% star_age) * 365 * 24 * 3600 !+ (1.892 * (10 ** 14))
+        planet_age_cgs= (s% star_age) * 365.0 * 24.0 * 3600.0 !+ (1.892 * (10.0 ** 14.0))
         planet_mass_cgs = (s% star_mass) * msun
 
         comp_bool = 0
@@ -117,6 +117,7 @@
         teq = s% x_ctrl(57)
         escape_regime = s% x_ctrl(58)
     
+<<<<<<< HEAD
         !Height parameters
         homopause_temp = 10000.0
 
@@ -141,11 +142,12 @@
         total_atoms = h1_atoms + he3_atoms + he4_atoms + c12_atoms &
         + n14_atoms + o16_atoms + ne20_atoms + mg24_atoms
 
-        frac_absorbing_radius = 1
+        frac_absorbing_radius = 1.0
 
         !Calculating Mole Fraction
-        atomic_mass_h1 = 1 * amu
-        atomic_mass_he4 = 4 * amu
+        atomic_mass_h1 = 1.0 * amu
+        atomic_mass_he4 = 4.0 * amu
+        
         h1_number_frac  = h1_atoms / total_atoms
         he4_number_frac = he4_atoms / total_atoms
 
@@ -166,6 +168,7 @@
         !Importing the varibles from the start of the step
         scale_height =  s% xtra(1)
         molar_mass = s% xtra(2)
+<<<<<<< HEAD
 
         !The 1.25 is the molecular weight of H and He ** .5
         !V_he = 2.88 V_h2 = 1.98
@@ -176,14 +179,13 @@
         homopause_radius = planet_radius_cgs + radius_above_surface
 
         !Calculating the luminosity
-        !The 22.12 instead of 22.12 is to convert to ergs
+        !The 22.12 (29.12? -BH)
+        !instead of 22.12 is to convert to ergs
         LOG_LEUV = 29.12 - 1.24 * (LOG10((planet_age_cgs / (3.154 * (10 ** 16)))))
         luminosity_euv = (10 ** LOG_LEUV)
 
-        !K_tides doesn't matter too much. It's usually .99, whereas other factors vary by orders of magnitude
-        !epsilon = (((planet_mass_cgs / (host_star_mass)) / 3) ** (1. / 3)) * ((orbital_distance) / planet_radius_cgs)
-        epsilon = (((planet_mass_cgs / (host_star_mass)) / 3) ** (1. / 3)) * ((orbital_distance) / homopause_radius)
-
+        !K tides factor 
+        epsilon = (((planet_mass_cgs / (host_star_mass)) / 3.0) ** (1.0 / 3.0)) * ((orbital_distance) / homopause_radius)
         K_tides = (1.0 - (3.0 / (2.0 * epsilon)) + (1.0 / (2.0 * (epsilon ** 3.0))))
 
         !The beginning of the interesting flux rates
@@ -191,9 +193,8 @@
         escape_dl = (standard_cgrav * planet_mass_cgs * (atomic_mass_he4 - atomic_mass_h1) &
         * mass_fractionation_effect) / ((homopause_radius ** 2.0) * kerg * homopause_temp)
 
-	    !The 10**7 gets q_c into ergs from watts
-       	q_c = (3.23d5) * ((planet_mass_cgs / 1000) ** (1.5)) * (homopause_radius / 100) ** (-.5) * (molar_mass / 6.022d26)
-
+       	q_c = (3.23d5) * ((planet_mass_cgs / 1000.0) ** (1.5)) * (homopause_radius / 100.0) ** (-0.5) * (molar_mass / 6.022d26)
+	!The 10**7 gets q_c into ergs from watts
        	q_net = frac_absorbed_euv * (luminosity_euv / (10.0 ** 7.0)) * ((homopause_radius / 100.0) ** 2.0)&
        	/ (4.0 * ((orbital_distance / 100.0) ** 2.0))
 
@@ -205,9 +206,10 @@
         !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         !!!!!!!          Radiation recombination limited          !!!!!!!
         !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        flux = (luminosity_euv / (4 * 3.14159 * (orbital_distance ** 2)))
+<<<<<<< HEAD
+        flux = (luminosity_euv / (4 * pi * (orbital_distance ** 2)))
 
-        c_s = (2.0 * kerg * 10000 / atomic_mass_h1) ** (0.50)
+        c_s = (2.0 * kerg * 10000.0 / atomic_mass_h1) ** (0.50)
 
         flux_term = standard_cgrav * planet_mass_cgs / & 
         (3.204d-11 * 2.7d-13 * (planet_radius_cgs ** 2) * (c_s ** 2))
@@ -238,7 +240,7 @@
                 END IF
         END IF
 
-        right_side = escape_dl * h1_number_frac * atomic_mass_h1 * 4 * pi * (homopause_radius ** 2)
+        right_side = escape_dl * h1_number_frac * atomic_mass_h1 * 4.0 * pi * (homopause_radius ** 2.0)
 
         IF (comp_bool > 0) THEN
             IF (mass_loss_rate < right_side) THEN
@@ -263,12 +265,12 @@
             IF (mass_loss_rate > right_side) THEN
                 escape_rate_h1 = ((mass_loss_rate * atomic_mass_h1 * h1_number_frac) + & 
                 (escape_dl * atomic_mass_h1 * atomic_mass_he4 &
-                * h1_number_frac * he4_number_frac * 4 * pi * (homopause_radius ** 2))) &
+                * h1_number_frac * he4_number_frac * 4.0 * pi * (homopause_radius ** 2))) &
                 / ((atomic_mass_h1 * h1_number_frac) + (atomic_mass_he4 * he4_number_frac))
 
                 escape_rate_he4 = ((mass_loss_rate * atomic_mass_he4 * he4_number_frac) - &
                 (escape_dl * atomic_mass_h1 * atomic_mass_he4 &
-                * h1_number_frac * he4_number_frac * 4 * pi * (homopause_radius ** 2))) &
+                * h1_number_frac * he4_number_frac * 4.0 * pi * (homopause_radius ** 2.0))) &
                 / ((atomic_mass_h1 * h1_number_frac) + (atomic_mass_he4 * he4_number_frac))
 
                 total_loss_rate = (escape_rate_h1 + escape_rate_he4)
@@ -337,7 +339,6 @@
         ierr = 0
         call star_ptr(id, s, ierr)
         if (ierr /= 0) return
-        !extras_startup = 0 commented out BMH 6/19
         call system_clock(time0,clock_rate)
         if (.not. restart) then
         call alloc_extra_info(s)
@@ -349,7 +350,7 @@
         s% xtra(2) = s% mu(1)
     end subroutine extras_startup
 
-          
+
     subroutine extras_after_evolve(id, ierr)
         integer, intent(in) :: id
         integer, intent(out) :: ierr
@@ -362,7 +363,6 @@
     end subroutine extras_after_evolve
 
     
-    !returns either keep_going, retry, backup, or terminate.
     integer function extras_check_model(id)
         integer, intent(in) :: id
         integer :: ierr
@@ -431,13 +431,13 @@
         names(3) = "planet_mass_cgs"
         vals(3) = (s% star_mass) * msun
 
-        names(4) = "Hydrogen_Mass"
+        names(4) = "hydrogen_mass"
         vals(4) = (s% star_mass_h1) * msun
 
-        names(5) = "He4_Mass"
+        names(5) = "he4_mass"
         vals(5) = (s% star_mass_he4) * msun
 
-        names(6) = "Time_Step_dt"
+        names(6) = "time_step_dt"
         vals(6) = s% dt
 
         names(7) = "mdot"
@@ -473,10 +473,10 @@
         names(17) = "xa(8,1)"
         vals(17) = s% xa(8,1)
 
-        names(18) = "Temperature_of_base"
+        names(18) = "temperature_of_base"
         vals(18) = s% T(s% nz)
 
-        names(19) = "Pressure_of_Base"
+        names(19) = "pressure_of_base"
         vals(19) = s% Pgas(s% nz)
 
         names(20) = 'photosphere_r ' ! radius where P = 1 kbar = 1e9 dyne cm^-2
@@ -521,7 +521,7 @@
         names(31) = 'R_transit' ! (1d-3 bar, 1d3 barye)  approximate 'transit radius' from Miller, Fortney & Jackson 2009 (Eq. 1)
         vals(31) = vals(30) + (-1 * s% scale_height(1) * LOG(1000. / (vals(30))))
 
-        names(32) = 'Region' !
+        names(32) = 'Region' 
         vals(32) = s% xtra(11)
 
         names(33) = 'q_c'
@@ -538,7 +538,6 @@
 
         names(37) = 'envelope_mass'
         vals(37) = s% xtra(3)
-
     end subroutine data_for_extra_history_columns
 
 
@@ -604,7 +603,6 @@
                 ! Hydrogen only loss
                 IF (mass_loss_rate < right_side) THEN
                     total_loss_rate = escape_rate_h1 + escape_rate_he4
-
                     do i = 1, s% nz
                         s% xa(1,i) = ((envelope_mass * s% xa(1,i)) - (escape_rate_h1 * s% dt)) &
                         / (envelope_mass - (escape_rate_h1 * s% dt))
@@ -642,9 +640,6 @@
         END IF
     end function extras_finish_step
 
-
-
-          
           
     subroutine alloc_extra_info(s)
         integer, parameter :: extra_info_alloc = 1
@@ -666,7 +661,6 @@
         call move_extra_info(s,extra_info_put)
     end subroutine store_extra_info
       
-
 
     subroutine move_extra_info(s,op)
         integer, parameter :: extra_info_alloc = 1
@@ -710,6 +704,7 @@
         end select
     end subroutine move_dbl
      
+
     subroutine move_int(int)
         integer :: int
         i = i+1
@@ -721,6 +716,7 @@
         end select
     end subroutine move_int
      
+    
     subroutine move_flg(flg)
         logical :: flg
         i = i+1
@@ -737,6 +733,7 @@
     end subroutine move_flg
   
     end subroutine move_extra_info
+
 
     subroutine enxa ( n, x, en )
 
@@ -763,7 +760,8 @@
         return
     end subroutine enxa
 
-      subroutine e1xb ( x, e1 )
+
+    subroutine e1xb ( x, e1 )
         implicit none
 
         real ( kind = 8 ) e1
@@ -811,4 +809,3 @@
       end subroutine e1xb
 
       end module run_star_extras
-      
