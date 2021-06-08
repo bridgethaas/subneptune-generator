@@ -5,7 +5,7 @@
 import numpy as np
 import os
 import scipy
-from scipy import loadtxt, optimize
+from scipy import optimize
 import mysubsprograms as my
 import sys
 
@@ -181,7 +181,7 @@ for mp in mpList:
 
                 for entropy in entropyList:
                     if (os.path.isfile('LOGS/' + 'hist_' + corem_mod.replace('.mod','.data')) == True):
-                        header = loadtxt(
+                        header = np.loadtxt(
                              'LOGS/' + 'hist_' + corem_mod.replace('.mod','.data'),
                              unpack=True,
                              skiprows=5,
@@ -190,12 +190,14 @@ for mp in mpList:
                         #so that we can use index()...
                         header = list(header)
 
-                        entropy_list, luminosity_list = loadtxt(
+                        entropy_list, luminosity_list = np.loadtxt(
                             'LOGS/' + 'hist_' + corem_mod.replace('.mod','.data'),
                             unpack=True,
                             skiprows=6,
-                            usecols=[header.index('center_entropy'), header.index('luminosity_ergs_s')])
-                        #TODO: make sure that if index() fails it tells you, raise IOError 'missing whatever in history_columns list'
+                            try:
+                                usecols=[header.index('center_entropy'), header.index('luminosity_ergs_s')])
+                            except:
+                                raise IOError('missing center_entropy and/or luminosity_ergs_s in history_columns.list')
                         
                         if isinstance(entropy_list, (list, np.ndarray)):
                             currentropy = entropy_list[-1]
