@@ -10,7 +10,7 @@
     save_model_filename = <<smwtfname>>
 
     write_profile_when_terminate = .true.
-    filename_for_profile_when_terminate = 'final_profile.data'
+    filename_for_profile_when_terminate = <<cooling_profile>>
 
     set_initial_model_number = .true.
     initial_model_number = 0

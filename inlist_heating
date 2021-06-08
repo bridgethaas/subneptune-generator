@@ -10,7 +10,7 @@
     save_model_filename = <<smwtfname>>
 
     write_profile_when_terminate = .true.
-    filename_for_profile_when_terminate = 'final_profile.data'
+    filename_for_profile_when_terminate = <<heating_profile>>  !'final_profile.data'
 
     ! add energy dissipation from the core
     relax_initial_L_center = .true.
