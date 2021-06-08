@@ -31,7 +31,6 @@ def expstr(myfloat):
     return mystring
 
 def calculate_rho(mp, enFrac):
-    #TODO: think about fixing usecols to use index() rather than hardcoded #s? low stakes
     observed_Mcore, observed_Rcore = loadtxt('coreMRcomp2_v40_all.txt', unpack=True, skiprows =11, usecols=[0,1])
     core_radius_function = interp1d(observed_Mcore, observed_Rcore, fill_value="extrapolate")
 
@@ -103,7 +102,6 @@ def calculate_column_depth(, profile, Teff_star):
     return column_depth
 
 
-
 def run_pre_reduce(inlist_pre_reduce, initial_mod, pre_reduce_mod, mp):
     if os.path.isfile(pre_reduce_mod):
         return 0
@@ -131,7 +129,7 @@ def run_pre_reduce(inlist_pre_reduce, initial_mod, pre_reduce_mod, mp):
     return run_time
 
 
-def run_pre_core(inlist_pre_core, pre_reduce_mod, pre_core_mod, enFrac,core_mass,rho):
+def run_pre_core(inlist_pre_core, pre_reduce_mod, pre_core_mod, enFrac, core_mass, rho):
     if os.path.isfile(pre_core_mod):
         return 0
     start_time = time.time()
@@ -156,7 +154,7 @@ def run_pre_core(inlist_pre_core, pre_reduce_mod, pre_core_mod, enFrac,core_mass
     return run_time
 
 
-def run_comp(initial_mod,inlist_comp, comp_mod, z, y):
+def run_comp(inlist_comp, pre_core_mod, comp_mod, z, y):
     if os.path.isfile(comp_mod):
         return 0
     start_time = time.time()
@@ -165,7 +163,7 @@ def run_comp(initial_mod,inlist_comp, comp_mod, z, y):
     g = f.read()
     f.close()
 
-    g = g.replace("<<initial_mod>>",'"' + initial_mod + '"')
+    g = g.replace("<<loadfile>>",'"' + pre_core_mod + '"')
     g = g.replace("<<smwtfname>>", '"' + comp_mod + '"')
     g = g.replace("<<hist_smwtfname>>", '"hist_' + comp_mod.replace(".mod",".data") + '"')
     g = g.replace("<<y>>",formatstr(y))
@@ -253,7 +251,7 @@ def run_corem(inlist_corem, reduce_mod, corem_mod, core_mass, rho):
     return run_time
 
 
-def run_heating(inlist_heating, corem_mod, heating_mod, entropy, luminosity):
+def run_heating(inlist_heating, corem_mod, heating_mod, heating_profile, entropy, luminosity):
     if os.path.isfile(heating_mod):
         return 0
     start_time = time.time()
@@ -265,6 +263,7 @@ def run_heating(inlist_heating, corem_mod, heating_mod, entropy, luminosity):
     g = g.replace("<<loadfile>>",'"' + corem_mod + '"')
     g = g.replace("<<smwtfname>>", '"' + heating_mod + '"')
     g = g.replace("<<hist_smwtfname>>", '"hist_' + heating_mod.replace(".mod",".data") + '"')
+    g = g.replace("<<heating_profile>>",'"' + heating_profile + '"')
     g = g.replace("<<entropy>>", formatstr(entropy))
     
     # This is to inflate the planet
@@ -280,7 +279,7 @@ def run_heating(inlist_heating, corem_mod, heating_mod, entropy, luminosity):
     return run_time
 
 
-def run_cooling(inlist_cooling, corem_mod, cooling_mod, entropy):
+def run_cooling(inlist_cooling, corem_mod, cooling_mod, cooling_profile, entropy):
     if os.path.isfile(cooling_mod):
         return 0
     start_time = time.time()
@@ -292,6 +291,7 @@ def run_cooling(inlist_cooling, corem_mod, cooling_mod, entropy):
     g = g.replace("<<loadfile>>",'"' + corem_mod + '"')
     g = g.replace("<<smwtfname>>", '"' + cooling_mod + '"')
     g = g.replace("<<hist_smwtfname>>", '"hist_' + cooling_mod.replace(".mod",".data") + '"')
+    g = g.replace("<<cooling_profile>>", '"' + cooling_profile + '"')
     g = g.replace("<<entropy>>", formatstr(entropy))
     
     h = open(inlist_cooling, 'w')
@@ -304,7 +304,7 @@ def run_cooling(inlist_cooling, corem_mod, cooling_mod, entropy):
     return run_time
 
 
-def run_remove_heating(remove_heating_profile, inlist_remove_heating, heating_mod, remove_mod):
+def run_remove_heating(inlist_remove_heating, heating_mod, remove_heating_profile,remove_mod):
     if os.path.isfile(remove_mod):
         return 0
     start_time = time.time()
@@ -328,7 +328,7 @@ def run_remove_heating(remove_heating_profile, inlist_remove_heating, heating_mo
     return run_time
 
 
-def run_remove_cooling(remove_cooling_profile, inlist_remove_cooling, cooling_mod, remove_mod):
+def run_remove_cooling(inlist_remove_cooling, cooling_mod, remove_cooling_profile, remove_mod):
     if os.path.isfile(remove_mod):
         return 0
     start_time = time.time()
@@ -352,7 +352,7 @@ def run_remove_cooling(remove_cooling_profile, inlist_remove_cooling, cooling_mo
     return run_time
 
 
-def run_irrad(irrad_profile, inlist_irrad, remove_mod, irrad_mod, column_depth, flux_dayside):
+def run_irrad(inlist_irrad, remove_mod, irrad_mod, irrad_profile, column_depth, flux_dayside):
     if os.path.isfile(irrad_mod):
         return 0
     start_time = time.time()
@@ -378,7 +378,7 @@ def run_irrad(irrad_profile, inlist_irrad, remove_mod, irrad_mod, column_depth, 
     return run_time
 
 
-def run_evolve(evolve_profile, inlist_evolve, irrad_mod, evolve_mod,
+def run_evolve(inlist_evolve, irrad_mod, evolve_mod, evolve_profile,
                 n_frac, a, ms, orb_sep, ec, column_depth, flux_dayside,
                 formation_time, teq, BA, escape_regime, diff_sep):
 
