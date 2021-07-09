@@ -1,6 +1,9 @@
 &star_job
     show_log_description_at_start = .true. 
 
+    history_columns_file = 'src/history_columns.list'
+    profile_columns_file = 'src/profile_columns.list'
+
     save_model_when_terminate = .true.
     save_model_filename = 'pre_corem1.mod'
 
